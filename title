@@ -1,0 +1,5 @@
+ スマートコントラクトのガス消費量のReource Aware MLを用いた静的解析
+
+ Static Analysis for Gas Consumption of Smart Contracts Using Resource Aware ML 
+
+ MichelsonインタプリタのResource Aware MLでの実装とコントラクタのガス消費量の推測
