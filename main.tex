@@ -1,11 +1,66 @@
 \documentclass{kuisthesis}
+\usepackage{listings}
+\usepackage[dvipdfmx]{color}
+\usepackage{amsmath,amssymb}
+\usepackage{comment}
+
+\definecolor{base}{gray}{0} %black
+\definecolor{comment}{rgb}{0.52,0.60,0.00} %green
+\definecolor{string}{rgb}{0.83,0.21,0.51} %magenta
+\definecolor{keyword1}{rgb}{0.15,0.55,0.82} %blue
+\definecolor{keyword2}{rgb}{0.80,0.29,0.09} %orange
+\definecolor{keyword3}{rgb}{0.71,0.54,0.00} %yellow
+\definecolor{keyword4}{rgb}{0.42,0.44,0.77} %violet
+
+
+\lstdefinelanguage{michelson}{
+  morekeywords = [1]{
+    parameter, storage, code
+  },
+  morekeywords = [2]{
+    int, nat, bool, pair, operation, unit
+  },
+  morekeywords = [3] {
+    CAR, DUP, DIP, CDR, ADD, NIL, PAIR
+  },
+  morecomment = [l]{//},
+  morecomment = [s]{/*}{*/},
+  morestring = [b]{"},
+  morestring = [b]{'},
+  alsodigit = {-},
+  sensitive = true
+}
+
+\renewcommand{\lstlistingname}{Code}
+\lstset{
+  basicstyle={\ttfamily\color{base}\scriptsize},%コードの基本書式
+  keywordstyle=[1]{\color{keyword1}},%キーワード1のスタイル
+  keywordstyle=[2]{\color{keyword2}},%キーワード2のスタイル
+  keywordstyle=[3]{\color{keyword3}},%キーワード3のスタイル
+  keywordstyle=[4]{\color{keyword4}},%キーワード4のスタイル
+  commentstyle={\gtfamily\color{comment}},%コメントのスタイル
+  stringstyle={\gtfamily\color{string}},%文字列のスタイル
+  numbers=left,%行番号は左
+  stepnumber=1,%一行ずつ行番号をふる
+  numberstyle={\sffamily\scriptsize},%行番号の書式
+  xleftmargin=0zw, %左余白
+  xrightmargin=0zw,%右余白
+  tabsize=4,%タブの空白数
+  frame=single,%フレームの書式
+  frameround=tttt,%角を丸めるかどうか tで丸める
+  breaklines=true,%長くなったら途中で改行
+  captionpos=b,%タイトルの位置
+  breakindent=10pt,%改行されたときの送り幅
+  showstringspaces=false,%文字列中の半角スペースを表示させない
+  lineskip=-1pt%通常の文章より行送りを狭くする
+}
 
 \jtitle[スマートコントラクトのガス消費量のReource Aware MLを\\用いた静的解析]
   {スマートコントラクトのガス消費量の\\Reource Aware MLを用いた静的解析}
 \etitle{Static Analysis for Gas Consumption of Smart Contracts Using Resource Aware ML}
 \jauthor{小野　雄登}
 \eauthor{Yuto Ono}
-\supervisor{末永　幸平　教授}
+\supervisor{末永　幸平　准教授}
 \date{2021年2月2日}
 
 \begin{document}
@@ -105,23 +160,118 @@ RAMLは，OCamlで用いられる文法を備えた関数型プログラミン�
 具体的な方法としては，Michelsonで実装されている型や命令などのライブラリをRAMLで実装し，
 MichelsonのコントラクトをRAML上でエンコードし，それを解析してガス消費量の見積もる．
 
-本報告書は以下のように構成されている．第2章では，本研究の背景知識として，TezosとMichelsonプログラム，
+本報告書は以下のように構成されている．第2節では，本研究の背景知識として，TezosとMichelson，
 スマートコントラクトにおけるガス消費の仕組み，そして解析に用いるツールであるRAMLについてそれぞれ説明する．
-第3章では，MihcelsonプログラムのRAMLでの実装について説明する．
-第4章では，第3章で実装したRAMLプログラムを用いて行ったガス消費量の解析について，結果と考察を記述する．
-第5章では，実装したプログラムについていくつかの改善点を示す．
-最後に第6章で本研究についての結論を述べる．
+第3節では，MihcelsonプログラムのRAMLでの実装について説明する．
+第4節では，第3章で実装したRAMLプログラムを用いて行ったガス消費量の解析について，結果と考察を記述する．
+第5節では，実装したプログラムについていくつかの改善点を示す．
+最後に第6節で本研究についての結論を述べる．
 
 
 \section{背景知識}\label{sec-preliminary}
-本章では，
-
+本節では，本研究に関連する背景知識について述べる．第3.1節ではTezosとMichelsonについて，
+第3.2節ではスマートコントラクトにおけるガス消費の仕組みについて，
+第3.3節ではRAMLについてそれぞれ述べる．
 
 \subsection{TezosとMichelsonについて}\label{subsec-pre-tezos}
+Tezosはスマートコントラクトを用いたブロックチェーンを技術基盤とする仮想通貨の1つである．
+BitcoinやEthereumといった仮想通貨が先立って流通されるようになった中，
+Tezosはそれらのブロックチェーンの弱点を解消することを目的として開発された．
+Tezosの特徴として"Proof-of-Stake"(PoS)と呼ばれるコンセンサスアルゴリズムを採用していることが挙げられる．
+従来のブロックチェーンで採用されている"Proof-of-Work"(PoW)が，
+コンピュータの計算能力が高いユーザーに対してブロック生成の権利を与えているのに対して，
+PoSでは通貨の保有量が多いユーザーに対してブロック生成の権利が与えられる．
+Tezosの採用しているPoSは"Liquid-Proof-of-Stake"(LPoS)といい，
+ブロック生成の権利を他のユーザーに委任することができる．
+これにより，多くのユーザーがブロック生成に参加することができ，
+プロトコルの分散性を高めるという目的に寄与している．
+
+Mihcelsonは，Tezosのスマートコントラクトを記述するために用いられるプログラミング言語である．
+この言語はスタックベースで，高レベルのデータ型とプリミティブ，および厳密な静的型チェックを備えている．
+
+Michelsonのプログラムは，プログラムに対して与えられるパラメータと，ブロックチェーン上に保存されているストレージのペアを受け取り，
+このプログラムの終了後に実行される操作のリストと，
+プログラムの実行中に更新されブロックチェーン上に保存されるストレージのペアを返す純粋な関数である．
+プログラムの本体は，順番に実行される一連の命令である．
+各命令は，スタックを入力として受け取り，そのスタックの内容を書き換えて出力する関数である．
+プログラムの初期スタックは，引数として与えられたパラメータとストレージのペアが一番上に積まれた状態のもので，
+その初期スタックに対して順番に命令が適用され，
+最後に操作のリストとストレージのペアが一番上に積まれた状態のスタックが残り，それが出力される．
+
+Michelsonプログラムの例として，簡単な演算を行うプログラムであるexample1のコードをCode \ref{1}に示す．
+これは，整数のペアをパラメータとして受け取り，2つの整数の和をストレージに書き込むプログラムである．
+\\
+\begin{lstlisting} [language=michelson, caption=example1.tz, label=1]
+  parameter (pair int int); 
+  storage int;
+  code  /* ((para1, para2), st) */
+    { CAR ;   /* (para1, para2) */
+      DUP ;   /* (para1, para2) : (para1, para2) */
+      CAR ;   /* para1 : (para1, para2) */
+      DIP { CDR } ;   /* para1 : para2 */
+      ADD ;   /* st' */
+      NIL operation ;   /* [] : st' */
+      PAIR    /* ([], st') */
+    }
+\end{lstlisting}
+
+以下，プログラムの内容を説明する．
+
+Michelsonプログラムのコードは，プログラムに対して与えられる引数であるparameterと，
+ブロックチェーン上に保存されているストレージの値であるstorageの型宣言から始まる．
+1行目はparameterの型が(pair int int)であること，2行目はstorageの型がintであることを宣言している．
+3行目以降はプログラムの本体であるcodeである．codeには一連の命令が記述されていて，
+この命令が初期スタックに対して順に実行されていく．以下，codeの内容について行番号ごとに説明する．
+なお，スタックの状態を記述する際，スタックの要素を : で区切って表す．
+
+\begin{itemize}
+  \item プログラム開始時のスタックは，parameterとstorageの値のペアが空のスタックに積まれた状態で始まる．
+  parameterの値を(para1, para2)，storageの値をstと表すとすると，初期スタックは((para1, para2), st)である．
+  \item 4行目のCARは，スタックのトップの要素がペアだった場合，その要素を取り出して，
+  ペアの第1要素をスタックに積む命令である．4行目時点でのスタックは(para1, para2)である．
+  \item 5行目のDUPは，スタックのトップの要素を複製してスタックに積む命令である．
+  5行目時点でのスタックは(para1, para2) : (para1, para2)である．
+  \item 6行目は4行目と同じくCARを実行する．6行目時点でのスタックはpara1 : (para1, para2)である．
+  \item 7行目のDIPは引数として命令列bodyを受け取る命令で，スタックのトップの要素を保持した状態で，
+  その要素を取り出した状態のスタックに対してbodyを実行する命令である．
+  つまり，スタックのトップのpara1を保持した状態で，スタック(para1, para2)に対してCDRを実行する．
+  CDRは，スタックのトップの要素がペアの場合，その要素を取り出して，ペアの第2要素をスタックに積む命令である．
+  よって，7行目時点でのスタックはpara1 : para2である．
+  \item 8行目のADDは，スタックのトップの要素xと2番目の要素yの型が，それら2つの演算が定義されているような型である場合，
+  xとyを取り出し，x+yの値をスタックに積む命令である．例えば，xとyがともにint型ならば，x+yはint型である．
+  para1 + para2の値をst'と表すとすると，8行目時点でのスタックはst'である．
+  \item 9行目のNILは引数として型aを受け取る命令で，リストの型がaであるような空のリスト[ ]をスタックに積む命令である．
+  9行目時点でのスタックは[ ] : st'である．
+  \item 10行目のPAIRはスタックのトップの要素と2番目の要素を取り出し，それらのペアをスタックに積む命令である．
+  この命令後，スタックは([ ], st')となり，プログラムが終了する．
+\end{itemize}
+
+プログラムの終了時のスタックは，このプログラム終了後に続いて行われる操作のリストoperation listと，
+実行中に更新されブロックチェーンに保存されるストレージの値storage'のペアのみが積まれている状態でなければならない．
+このとき，プログラム実行前のストレージの値storageと，プログラム実行後のストレージの値storage'の型が一致している必要がある．
+
+Michelsonには静的型チェックが備えられている．それぞれの命令には，
+命令の実行前と実行後のスタックの状態を型で表した型規則が存在する．
+例えば，PAIRについての型規則は以下のように表される．
+\begin{displaymath}
+  {\rm a' : b' : S'} \rightarrow {\rm pair\ a'\ b' : S'}
+\end{displaymath}
+これは，実行前のスタックのトップの要素の型がa'，2番目の要素の型がb'のとき，
+実行後のスタックのトップの要素がpair a' b'となることを示している．
+また，ADDについての型規則は以下のように表される．
+\begin{displaymath}
+  {\rm int : int : S'} \rightarrow {\rm int : S'}
+\end{displaymath}
+これは，実行前のスタックのトップの要素と2番目の要素がともにintである必要があり，
+その場合，実行後のスタックのトップの要素がintとなることを示している．
+
+命令を実行する前にスタックの状態が型規則に則った形でない場合，命令は失敗する．
+これを防ぐために，プログラム実行前に静的な型チェックが行われる．
 
 \subsection{コントラクトのガス消費の仕組み}\label{subsec-pre-gas}
 
 \subsection{Resource Aware MLについて}\label{subsec-pre-raml}
+Resource Aware MLは，
 
 \section{RAMLでのMichelsonプログラムの実装}
 

@@ -1,11 +1,11 @@
-\contentsline {section}{\numberline {1}序論}{1}%
-\contentsline {section}{\numberline {2}背景知識}{2}%
-\contentsline {subsection}{\numberline {2.1}TezosとMichelsonについて}{2}%
-\contentsline {subsection}{\numberline {2.2}コントラクトのガス消費の仕組み}{2}%
-\contentsline {subsection}{\numberline {2.3}Resource Aware MLについて}{2}%
-\contentsline {section}{\numberline {3}RAMLでのMichelsonプログラムの実装}{2}%
-\contentsline {section}{\numberline {4}ガス消費量の解析の結果と考察}{2}%
-\contentsline {section}{\numberline {5}改善点}{2}%
-\contentsline {section}{\numberline {6}結論}{2}%
-\contentsline {section}{\hbox to\@tempdima {\hfil }謝辞}{2}%
-\contentsline {section}{\hbox to\@tempdima {\hfil }参考文献}{2}%
+\contentsline {section}{\numberline {1}序論}{1}{}%
+\contentsline {section}{\numberline {2}背景知識}{2}{}%
+\contentsline {subsection}{\numberline {2.1}TezosとMichelsonについて}{2}{}%
+\contentsline {subsection}{\numberline {2.2}コントラクトのガス消費の仕組み}{5}{}%
+\contentsline {subsection}{\numberline {2.3}Resource Aware MLについて}{5}{}%
+\contentsline {section}{\numberline {3}RAMLでのMichelsonプログラムの実装}{5}{}%
+\contentsline {section}{\numberline {4}ガス消費量の解析の結果と考察}{5}{}%
+\contentsline {section}{\numberline {5}改善点}{5}{}%
+\contentsline {section}{\numberline {6}結論}{5}{}%
+\contentsline {section}{\hbox to\@tempdima {\hfil }謝辞}{5}{}%
+\contentsline {section}{\hbox to\@tempdima {\hfil }参考文献}{5}{}%
