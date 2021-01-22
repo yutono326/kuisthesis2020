@@ -1,26 +1,24 @@
 # Fdb version 3
-["bibtex main"] 1611158590 "main.aux" "main.bbl" "main" 1611158712
+["bibtex main"] 1611329188 "main.aux" "main.bbl" "main" 1611330246
   "./kuisunsrt.bst" 1558734156 22110 8367202202bd59402db2507285eff8fb ""
-  "main.aux" 1611158709 2121 3a457c00c7f89dce3845dcaae4c6b27e "latex"
+  "main.aux" 1611330243 2128 2d6a65c05066eb5214b1667c7c47e4f9 "latex"
   "main.bib" 1609751903 2090 797c5d0a56659364db88f6c978f0e4d0 ""
   (generated)
-  "main.blg"
   "main.bbl"
-["dvipdf"] 1611158710 "/Users/onoyuto/Documents/kuisthesis2020/main.dvi" "/Users/onoyuto/Documents/kuisthesis2020/main.pdf" "/Users/onoyuto/Documents/kuisthesis2020/main" 1611158712
-  "/Users/onoyuto/Documents/kuisthesis2020/main.dvi" 1611158709 50956 a4b447fab0b8bab00b3132911b7d07be "latex"
+  "main.blg"
+["dvipdf"] 1611330243 "/Users/onoyuto/Documents/kuisthesis2020/main.dvi" "/Users/onoyuto/Documents/kuisthesis2020/main.pdf" "/Users/onoyuto/Documents/kuisthesis2020/main" 1611330246
+  "/Users/onoyuto/Documents/kuisthesis2020/main.dvi" 1611330243 71896 2e7a2fe0ba24e8ad600174cfc86f624c "latex"
   (generated)
   "/Users/onoyuto/Documents/kuisthesis2020/main.pdf"
-["latex"] 1611158706 "/Users/onoyuto/Documents/kuisthesis2020/main.tex" "/Users/onoyuto/Documents/kuisthesis2020/main.dvi" "main" 1611158712
-  "/Users/onoyuto/Documents/kuisthesis2020/main.aux" 1611158709 2121 3a457c00c7f89dce3845dcaae4c6b27e ""
-  "/Users/onoyuto/Documents/kuisthesis2020/main.tex" 1611158706 26341 2d4ac5cc886125723a5ed8054e0a0fda ""
+["latex"] 1611330238 "/Users/onoyuto/Documents/kuisthesis2020/main.tex" "/Users/onoyuto/Documents/kuisthesis2020/main.dvi" "main" 1611330246
+  "/Users/onoyuto/Documents/kuisthesis2020/main.aux" 1611330243 2128 2d6a65c05066eb5214b1667c7c47e4f9 ""
+  "/Users/onoyuto/Documents/kuisthesis2020/main.tex" 1611330237 36390 dbbe3d6f22164f040b58494ba6ad3acd ""
   "/usr/local/texlive/2020/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/jknappen/ec/ecrm1000.tfm" 1136768653 3584 adb004a0c8e7c46ee66cad73671f37b4 ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/goth10.tfm" 1463434352 1196 5981e79c37b2cfd27b3612a6783cd4b6 ""
-  "/usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/goth8.tfm" 1463434352 1196 f76ab7ae43ed1dfe29b9e6ec2933fdb4 ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/min10.tfm" 1463434352 1196 1be730212205a270378fba11a44765dc ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/min8.tfm" 1463434352 1196 d5b431ce76e19b70391960a9dd08fa4f ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/tgoth10.tfm" 1463434352 856 7404843a5f798859944d7973a47821d5 ""
-  "/usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/tgoth8.tfm" 1463434352 856 8bfd9428b6290f70fd02322c8acb67da ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/tmin10.tfm" 1463434352 856 39c171483fe1bb7d0e1368980c0c205b ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/tmin8.tfm" 1463434352 856 bdef40bcf3aed4751efa9be9bfa6eb4b ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1246382020 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
@@ -100,14 +98,14 @@
   "image1.png" 1611133065 68686 34b6cc75f3a980898269f8a0a207fbad ""
   "kuisthesis.cls" 1558734156 226 efab6b93c6e85f7190899aa9184acc12 ""
   "kuisthesis.sty" 1580138156 27701 f140e64e5a97be522d142cfd081be7a3 ""
-  "main.aux" 1611158709 2121 3a457c00c7f89dce3845dcaae4c6b27e "latex"
-  "main.bbl" 1611158591 1413 98b8a5d3e56cbf1374b2271e1d445cd5 "bibtex main"
-  "main.tex" 1611158706 26341 2d4ac5cc886125723a5ed8054e0a0fda ""
-  "main.toc" 1611158709 795 7d80e2523db537f1cfcea39d1ed06b12 "latex"
+  "main.aux" 1611330243 2128 2d6a65c05066eb5214b1667c7c47e4f9 "latex"
+  "main.bbl" 1611329188 1413 98b8a5d3e56cbf1374b2271e1d445cd5 "bibtex main"
+  "main.tex" 1611330237 36390 dbbe3d6f22164f040b58494ba6ad3acd ""
+  "main.toc" 1611330243 801 b832c5f0d901e59c31307089909bc6d5 "latex"
   (generated)
-  "/Users/onoyuto/Documents/kuisthesis2020/main.log"
+  "main.toc"
   "main.aux"
   "/Users/onoyuto/Documents/kuisthesis2020/main.dvi"
-  "main.toc"
-  "main.log"
   "main.dvi"
+  "/Users/onoyuto/Documents/kuisthesis2020/main.log"
+  "main.log"

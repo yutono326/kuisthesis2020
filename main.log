@@ -1,4 +1,4 @@
-This is e-pTeX, Version 3.14159265-p3.8.3-191112-2.6 (utf8.euc) (TeX Live 2020) (preloaded format=platex 2021.1.18)  21 JAN 2021 01:05
+This is e-pTeX, Version 3.14159265-p3.8.3-191112-2.6 (utf8.euc) (TeX Live 2020) (preloaded format=platex 2021.1.18)  23 JAN 2021 00:43
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -286,55 +286,65 @@ LaTeX Font Info:    Font shape `JY1/mc/b/n' in size <12> not available
 (Font)              Font shape `JY1/mc/bx/n' tried instead on input line 70.
 LaTeX Font Info:    Font shape `JY1/mc/bx/n' in size <12> not available
 (Font)              Font shape `JY1/gt/m/n' tried instead on input line 70.
+LaTeX Font Info:    Kanji font shape `JY1/gt/m/it' undefined
+(Font)              No change on input line 76.
+LaTeX Font Info:    Font shape `T1/zpltlf/m/it' will be
+(Font)              scaled to size 12.0pt on input line 76.
  [1001] [1002] [1003] (/Users/onoyuto/Documents/kuisthesis2020/main.toc)
 \tf@toc=\write4
 \openout4 = `main.toc'.
 
  [1004] [1] [2]
-LaTeX Font Info:    Trying to load font information for T1+npxtt on input line 205.
+LaTeX Font Info:    Trying to load font information for T1+npxtt on input line 201.
  (/usr/local/texlive/2020/texmf-dist/tex/latex/newpx/t1npxtt.fd
 File: t1npxtt.fd 2000/12/14 v1.0
 )
 LaTeX Font Info:    Font shape `T1/npxtt/m/n' will be
-(Font)              scaled to size 12.0pt on input line 205.
+(Font)              scaled to size 12.0pt on input line 201.
 LaTeX Font Info:    Font shape `T1/npxtt/m/n' will be
-(Font)              scaled to size 8.0pt on input line 205.
+(Font)              scaled to size 10.95pt on input line 201.
 LaTeX Font Info:    Font shape `T1/zpltlf/m/n' will be
-(Font)              scaled to size 8.0pt on input line 206.
-LaTeX Font Info:    Trying to load font information for T1+qhv on input line 206.
+(Font)              scaled to size 10.95pt on input line 202.
+LaTeX Font Info:    Trying to load font information for T1+qhv on input line 202.
  (/usr/local/texlive/2020/texmf-dist/tex/latex/tex-gyre/t1qhv.fd
 File: t1qhv.fd 2009/09/25 v1.2 font definition file for T1/qhv
 )
 LaTeX Font Info:    Font shape `T1/qhv/m/n' will be
-(Font)              scaled to size 7.52002pt on input line 206.
- [3] [4]
+(Font)              scaled to size 10.29301pt on input line 202.
+LaTeX Font Info:    Font shape `T1/qhv/m/n' will be
+(Font)              scaled to size 7.52002pt on input line 202.
+ [3] [4] [5] [6]
 File: image1.png Graphic file (type bmp)
 <image1.png>
- Excluding 'comment' comment. [5] [6] (/usr/local/texlive/2020/texmf-dist/tex/latex/listings/lstlang1.sty
+ Excluding 'comment' comment. [7] [8] (/usr/local/texlive/2020/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2020/03/24 1.8d listings language file
 ) (/usr/local/texlive/2020/texmf-dist/tex/latex/listings/lstlang2.sty
 File: lstlang2.sty 2020/03/24 1.8d listings language file
 ) (/usr/local/texlive/2020/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2020/03/24 1.8d (Carsten Heinz)
-) [7] (/Users/onoyuto/Documents/kuisthesis2020/main.bbl
+) [9]
+LaTeX Font Info:    Font shape `T1/npxtt/m/n' will be
+(Font)              scaled to size 8.0pt on input line 452.
+LaTeX Font Info:    Font shape `T1/zpltlf/m/n' will be
+(Font)              scaled to size 8.0pt on input line 453.
+ [10] [11] (/Users/onoyuto/Documents/kuisthesis2020/main.bbl
 LaTeX Font Info:    Kanji font shape `JY1/gt/m/it' undefined
 (Font)              No change on input line 5.
-LaTeX Font Info:    Font shape `T1/zpltlf/m/it' will be
-(Font)              scaled to size 12.0pt on input line 5.
+ [12]
 LaTeX Font Info:    Kanji font shape `JY1/gt/m/it' undefined
 (Font)              No change on input line 8.
 LaTeX Font Info:    Kanji font shape `JY1/gt/m/it' undefined
 (Font)              No change on input line 20.
 LaTeX Font Info:    Kanji font shape `JY1/gt/m/it' undefined
 (Font)              No change on input line 28.
-) [8] (/Users/onoyuto/Documents/kuisthesis2020/main.aux) ) 
+) [13] (/Users/onoyuto/Documents/kuisthesis2020/main.aux) ) 
 Here is how much of TeX's memory you used:
- 5500 strings out of 479776
- 74066 string characters out of 5879605
- 696164 words of memory out of 5000000
- 22802 multiletter control sequences out of 15000+600000
- 455506 words of font info for 102 fonts, out of 8000000 for 9000
+ 5622 strings out of 479776
+ 75442 string characters out of 5879605
+ 695134 words of memory out of 5000000
+ 22926 multiletter control sequences out of 15000+600000
+ 462318 words of font info for 107 fonts, out of 8000000 for 9000
  929 hyphenation exceptions out of 8191
- 87i,6n,91p,335b,1607s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 87i,6n,91p,335b,1820s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on /Users/onoyuto/Documents/kuisthesis2020/main.dvi (13 pages, 50956 bytes).
+Output written on /Users/onoyuto/Documents/kuisthesis2020/main.dvi (18 pages, 71896 bytes).

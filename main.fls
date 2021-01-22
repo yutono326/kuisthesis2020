@@ -401,6 +401,7 @@ OUTPUT /Users/onoyuto/Documents/kuisthesis2020/main.dvi
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/tgoth10.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/goth10.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/newpx/zpl-Bold-tlf-t1.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/newpx/zpl-Italic-tlf-t1.tfm
 INPUT /Users/onoyuto/Documents/kuisthesis2020/main.toc
 INPUT /Users/onoyuto/Documents/kuisthesis2020/main.toc
 INPUT /Users/onoyuto/Documents/kuisthesis2020/main.toc
@@ -410,8 +411,8 @@ INPUT /usr/local/texlive/2020/texmf-dist/tex/latex/newpx/t1npxtt.fd
 INPUT /usr/local/texlive/2020/texmf-dist/tex/latex/newpx/t1npxtt.fd
 INPUT /usr/local/texlive/2020/texmf-dist/tex/latex/newpx/t1npxtt.fd
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/txfonts/t1xtt.tfm
-INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/tmin8.tfm
-INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/min8.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/tmin10.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/min10.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/txfonts/t1xtt.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/newpx/zpl-Regular-tlf-t1.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/tex/latex/tex-gyre/t1qhv.fd
@@ -419,8 +420,11 @@ INPUT /usr/local/texlive/2020/texmf-dist/tex/latex/tex-gyre/t1qhv.fd
 INPUT /usr/local/texlive/2020/texmf-dist/tex/latex/tex-gyre/t1qhv.fd
 INPUT /usr/local/texlive/2020/texmf-dist/tex/latex/tex-gyre/t1qhv.fd
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/tex-gyre/ec-qhvr.tfm
-INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/tgoth8.tfm
-INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/goth8.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/tmin8.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/min8.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/tex-gyre/ec-qhvr.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/tgoth10.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/goth10.tfm
 INPUT /Users/onoyuto/Documents/kuisthesis2020/image1.png
 INPUT /Users/onoyuto/Documents/kuisthesis2020/image1.png
 INPUT /Users/onoyuto/Documents/kuisthesis2020/image1.png
@@ -437,9 +441,10 @@ INPUT /usr/local/texlive/2020/texmf-dist/tex/latex/listings/lstmisc.sty
 INPUT /usr/local/texlive/2020/texmf-dist/tex/latex/listings/lstmisc.sty
 INPUT /usr/local/texlive/2020/texmf-dist/tex/latex/listings/lstmisc.sty
 INPUT /usr/local/texlive/2020/texmf-dist/tex/latex/listings/lstmisc.sty
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/txfonts/t1xtt.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/newpx/zpl-Regular-tlf-t1.tfm
 INPUT /Users/onoyuto/Documents/kuisthesis2020/main.bbl
 INPUT /Users/onoyuto/Documents/kuisthesis2020/main.bbl
 INPUT /Users/onoyuto/Documents/kuisthesis2020/main.bbl
 INPUT /Users/onoyuto/Documents/kuisthesis2020/main.bbl
-INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/newpx/zpl-Italic-tlf-t1.tfm
 INPUT /Users/onoyuto/Documents/kuisthesis2020/main.aux
