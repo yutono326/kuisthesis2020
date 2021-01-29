@@ -4,14 +4,14 @@
 \contentsline {subsection}{\numberline {2.2}コントラクトのガス消費の仕組み}{7}{}%
 \contentsline {subsection}{\numberline {2.3}Resource Aware MLについて}{9}{}%
 \contentsline {section}{\numberline {3}RAMLでのMichelsonプログラムの実装}{14}{}%
-\contentsline {subsection}{\numberline {3.1}文法}{14}{}%
-\contentsline {subsection}{\numberline {3.2}命令}{15}{}%
-\contentsline {subsection}{\numberline {3.3}ライブラリを用いたプログラム}{19}{}%
-\contentsline {subsection}{\numberline {3.4}tickメトリックによるガス消費量の見積もり}{21}{}%
-\contentsline {section}{\numberline {4}ガス消費量の解析の結果と考察}{23}{}%
-\contentsline {section}{\numberline {5}改善点}{23}{}%
-\contentsline {section}{\numberline {6}結論}{23}{}%
-\contentsline {section}{\hbox to\@tempdima {\hfil }謝辞}{23}{}%
-\contentsline {section}{\hbox to\@tempdima {\hfil }参考文献}{23}{}%
-\startappendixtoc 
-\contentsline {section}{\hbox to\@tempdima {\hfil }付録 : 本研究において実装したRAMLライブラリのソースコード}{A-1}{}%
+\contentsline {subsection}{\numberline {3.1}文法}{15}{}%
+\contentsline {subsection}{\numberline {3.2}命令}{16}{}%
+\contentsline {subsection}{\numberline {3.3}ライブラリを用いたプログラム}{17}{}%
+\contentsline {subsection}{\numberline {3.4}tickメトリックによるガス消費量の見積もり}{18}{}%
+\contentsline {section}{\numberline {4}解析例と考察}{21}{}%
+\contentsline {section}{\numberline {5}関連研究}{24}{}%
+\contentsline {section}{\numberline {6}結論}{24}{}%
+\contentsline {subsection}{\numberline {6.1}結論}{24}{}%
+\contentsline {subsection}{\numberline {6.2}今後の課題}{24}{}%
+\contentsline {section}{\hbox to\@tempdima {\hfil }謝辞}{25}{}%
+\contentsline {section}{\hbox to\@tempdima {\hfil }参考文献}{25}{}%
