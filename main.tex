@@ -94,7 +94,7 @@ Tezosのスマートコントラクトは，スタックベースのプログラ
 
 Michelsonの命令は受け取ったスタックを書き換える．
 この挙動をRAMLで再現するために，スタックの要素をヴァリアント型{\tt t}として定義し，スタックを型{\tt t}のリストとして扱い，
-命令を({\tt t list -> t list})型をもつ関数として定義する．
+命令を({\tt t list $\rightarrow$ t list})型をもつ関数として定義する．
 Michelsonのコントラクトは，初期スタックに積まれる値の型宣言と，
 初期スタックに対して順に適用される一連の命令によって構成されている．
 この動作を模倣するプログラムを，本ライブラリを用いて，
@@ -206,20 +206,20 @@ MichelsonのプログラムをRAMLで解析するために，Michelsonの各命�
 interpreter costの複雑な計算によって算出されるような命令を含むコントラクトについては見積もりが難しく，
 今後の課題といえる．
 
-本報告書は以下のように構成されている．第2節では，本研究の背景知識として，TezosとMichelson，
+本報告書は以下のように構成されている．第2章では，本研究の背景知識として，TezosとMichelson，
 スマートコントラクトにおけるガス消費の仕組み，そして解析に用いるRAMLについてそれぞれ説明する．
-第3節では，Mihcelsonプログラムを模倣するRAMLプログラムの実装について説明する．
-第4節では，コントラクトのガス消費量の解析についていくつかの例を挙げ，結果と考察を述べる．
-第5節では，本研究の関連研究について論ずる．
-最後に第6節で本研究についての結論を述べる．
+第3章では，Mihcelsonプログラムを模倣するRAMLプログラムの実装について説明する．
+第4章では，コントラクトのガス消費量の解析についていくつかの例を挙げ，結果と考察を述べる．
+第5章では，本研究の関連研究について論ずる．
+最後に第6章で本研究についての結論を述べる．
 
 
 \section{背景知識}\label{sec-preliminary}
-本節では，本研究に関連する背景知識について述べる．第3.1節ではTezosとMichelsonについて，
-第3.2節ではスマートコントラクトにおけるガス消費の仕組みについて，
-第3.3節ではRAMLについてそれぞれ述べる．
+本節では，本研究に関連する背景知識について述べる．第2.1節ではTezosとMichelsonについて，
+第2.2節ではスマートコントラクトにおけるガス消費の仕組みについて，
+第2.3節ではRAMLについてそれぞれ述べる．
 
-\subsection{TezosとMichelsonについて}\label{subsec-pre-tezos}
+\subsection{TezosとMichelson}\label{subsec-pre-tezos}
 Tezosはスマートコントラクトを用いたブロックチェーンを技術基盤とする仮想通貨の1つである．
 BitcoinやEthereumといった仮想通貨が先立って流通されるようになった中，
 Tezosはそれらのブロックチェーンの弱点を解消することを目的として開発された．
@@ -227,7 +227,7 @@ Tezosの特徴として"Proof-of-Stake"(PoS)と呼ばれるコンセンサスア
 従来のブロックチェーンで採用されている"Proof-of-Work"(PoW)が，
 コンピュータの計算能力が高いユーザーに対してブロック生成の権利を与えているのに対して，
 PoSでは通貨の保有量が多いユーザーに対してブロック生成の権利が与えられる．
-Tezosの採用しているPoSは"Liquid-Proof-of-Stake"(LPoS)といい，
+Tezosの採用しているPoSは"Liquid Proof-of-Stake"(LPoS)といい，
 ブロック生成の権利を他のユーザーに委任することができる．
 これにより，多くのユーザーがブロック生成に参加することができ，
 プロトコルの分散性を高めるという目的に寄与している．
@@ -235,29 +235,7 @@ Tezosの採用しているPoSは"Liquid-Proof-of-Stake"(LPoS)といい，
 Mihcelsonは，Tezosのスマートコントラクトを記述するために用いられるプログラミング言語である．
 この言語はスタックベースで，高レベルのデータ型とプリミティブ，および厳密な静的型チェックを備えている\cite{michelson}．
 
-Michelsonの文法のうち，本研究でRAMLで実装する部分の文法を図\ref{image1}に示す．
-Tはスタックの要素の型を表す．Tは整数値の型int，自然整数の型nat，Tezosにおける通貨量の型mutez，
-Booleanの型bool，アドレスを表す型address，Unit値の型unit，オプション値の型option，
-命令を表す型operation，コントラクトを表す型contract，ペアの型pair，ユニオンの型orがある．
-Vはスタックの要素になり得る値を表し，整数値の$i$，BooleanのTrue，False，アドレスの$a$，
-Unit値のUnit，ペアの($V_1,V_2$)，ユニオンのLeft V，Right V，
-オプション値のSome V，None，空リストの[\ ]，リストの結合を表す$V_1 :: V_2$，
-命令列ISがある．$n$は自然整数，$i$は整数である．
-ISは命令列で，命令Iのシーケンスである．
-命令Iは，プログラムを中止する命令(FAILWITH)，構造のコントロールに関する命令(IF，LOOP，DIP)，
-スタックの操作に関する命令(DROP，DUP，SWAP，PUSH，UNIT)，
-スタックのトップ要素の比較に関する命令(EQ，NEQ，LT，GT，LE，GE)，
-Booleanに関する操作の命令(OR，AND，XOR，NOT)，
-整数値に関する命令(NEG，ABS，ISNAT，INT，ADD，SUB，MUL，EDIV)，
-スタックの上から2つの要素の比較命令(COMPARE)，ペアに関する命令(PAIR， CAR，CDR)，
-オプション値に関する命令(SOME，NONE，IF\_NONE)，ユニオンに関する命令(LEFT，RIGHT，IF\_LEFT)，
-リストに関する命令(CONS，NIL，IF\_CONS，MAP，SIZE，ITER)，
-コントラクトに関する命令(CONTRACT，TRANSFER\_TOKENS，AMOUNT，SOURCE)がある．
-Sはスタックを表す．空のスタックをEで表し，スタックに積まれた要素は\ :\ で区切る．
 
-
-
-\begin{comment}
 \begin{figure}[ht]
   \begin{center}
     \includegraphics[scale=0.75]{image1.png}
@@ -265,26 +243,53 @@ Sはスタックを表す．空のスタックをEで表し，スタックに積
     \label{image1}
   \end{center}
 \end{figure}
-\end{comment}
 
+
+\begin{comment}
 \begin{eqnarray*}
-  T &::=& \mbox{\gt int\ |\ nat\ |\ mutez\ |\ bool\ |\ address\ |\ unit}\ |\\
-  && \mbox{\gt option}\ T\ |\ \mbox{\gt list}\ T\ |\ \mbox{\gt operation\ |\ contract}\ T\ |\ \mbox{\gt pair}\ T\ T\ |\ \mbox{\gt or}\ T\ T \\
-  V &::=&\ i\ |\ \mbox{\gt True\ |\ False}\ |\ a\ |\ \mbox{\gt Unit}\ |\ (V_1, V_2)\ |\ \mbox{\gt Left}\ V\ |\ \mbox{\gt Right}\ V\ |\\
-  && \mbox{\gt Some}\ V\ |\ \mbox{\gt None}\ |\ [\ ]\ |\ V_1 :: V_2\ |\ IS\\
+  T &::=& {\tt int\ |\ nat\ |\ mutez\ |\ bool\ |\ address\ |\ unit}\ |\\
+  && {\tt option}\ T\ |\ {\tt list}\ T\ |\ {\tt operation\ |\ contract}\ T\ |\ {\tt pair}\ T\ T\ |\ {\tt or}\ T\ T \\
+  V &::=&\ i\ |\ {\tt True\ |\ False}\ |\ a\ |\ {\tt Unit}\ |\ (V_1, V_2)\ |\ {\tt Left}\ V\ |\ {\tt Right}\ V\ |\\
+  && {\tt Some}\ V\ |\ {\tt None\ |\ []}\ |\ V_1 :: V_2\ |\ IS\\
   n &::=& [0-9]+ \\
   i &::=& n\ |\ -n \\
   IS &::=& \{I_1;\ ...\ ;I_n\} \\
-  I &::=& \mbox{\gt FAILWITH\ |\ IF}\ IS_1\ IS_2\ |\ \mbox{\gt LOOP}\ IS\ |\ \mbox{\gt DIP}\ IS\ | \\
-  && \mbox{\gt DROP\ |\ DUP\ |\ SWAP\ |\ PUSH}\ T\ V\ |\ \mbox{\gt UNIT}\ |\\
-  && \mbox{\gt EQ\ |\ NEQ\ |\ LT\ |\ GT\ |\ LE\ |\ GE\ |\ OR\ |\ AND\ |\ XOR\ |\ NOT}\ | \\
-  && \mbox{\gt NEG\ |\ ABS\ |\ ISNAT\ |\ INT\ |\ ADD\ |\ SUB\ |\ MUL\ |\ EDIV}\ |\\
-  && \mbox{\gt COMPARE\ |\ PAIR\ |\ CAR\ |\ CDR\ |\ SOME\ |\ NONE}\ T\ |\\
-  && \mbox{\gt IF\_NONE}\ IS_1\ IS_2\ |\ \mbox{\gt LEFT}\ T\ |\ \mbox{\gt RIGHT}\ T\ |\ \mbox{\gt IF\_LEFT}\ IS_1\ IS_2\ | \\
-  && \mbox{\gt NIL}\ T\ |\ \mbox{\gt CONS\ |\ IF\_CONS}\ IS_1\ IS_2\ |\ \mbox{\gt SIZE\ |\ MAP}\ IS\ |\ \mbox{\gt ITER}\ IS\ | \\
-  && \mbox{\gt CONTRACT}\ T\ |\ \mbox{\gt TRANSFER\_TOKENS\ |\ AMOUNT\ |\ SOURCE} \\
-  S &::=& \mbox{\gt E}\ |\ V : S
+  I &::=& {\tt FAILWITH\ |\ IF}\ IS_1\ IS_2\ |\ {\tt LOOP}\ IS\ |\ {\tt DIP}\ IS\ | \\
+  && {\tt DROP\ |\ DUP\ |\ SWAP\ |\ PUSH}\ T\ V\ |\ {\tt UNIT}\ |\\
+  && {\tt EQ\ |\ NEQ\ |\ LT\ |\ GT\ |\ LE\ |\ GE\ |\ OR\ |\ AND\ |\ XOR\ |\ NOT}\ | \\
+  && {\tt NEG\ |\ ABS\ |\ ISNAT\ |\ INT\ |\ ADD\ |\ SUB\ |\ MUL\ |\ EDIV}\ |\\
+  && {\tt COMPARE\ |\ PAIR\ |\ CAR\ |\ CDR\ |\ SOME\ |\ NONE}\ T\ |\\
+  && {\tt IF\_NONE}\ IS_1\ IS_2\ |\ {\tt LEFT}\ T\ |\ {\tt RIGHT}\ T\ |\ {\tt IF\_LEFT}\ IS_1\ IS_2\ | \\
+  && {\tt NIL}\ T\ |\ {\tt CONS\ |\ IF\_CONS}\ IS_1\ IS_2\ |\ {\tt SIZE\ |\ MAP}\ IS\ |\ {\tt ITER}\ IS\ | \\
+  && {\tt CONTRACT}\ T\ |\ {\tt TRANSFER\_TOKENS\ |\ AMOUNT\ |\ SOURCE} \\
+  S &::=& {\tt E}\ |\ V : S
 \end{eqnarray*}
+\end{comment}
+
+Michelsonの文法のうち，本研究でRAMLで実装する部分の文法を図\ref{image1}に示す．
+$T$はスタックの要素の型を表す．$T$は整数値の型{\tt int}，自然整数の型{\tt nat}，Tezosにおける通貨量の型{\tt mutez}，
+Booleanの型{\tt bool}，アドレスを表す型{\tt address}，Unit値の型{\tt unit}，オプション値の型{\tt option}，
+命令を表す型{\tt operation}，コントラクトを表す型{\tt contract}，ペアの型{\tt pair}，ユニオンの型{\tt or}がある．
+$V$はスタックの要素の値を表し，整数値の$i$，Booleanの{\tt True，False}，アドレスの$a$，
+Unit値の{\tt Unit}，ペアの($V_1,V_2$)，ユニオンの{\tt Left} $V$，{\tt Right} $V$，
+オプション値の{\tt Some} $V$，{\tt None}，空リストの[\ ]，リストの結合を表す$V_1 :: V_2$，
+命令列$IS$がある．$n$は自然数，$i$は整数である．
+$IS$は命令列で，命令$I$のシーケンスである．
+命令$I$は，プログラムを中止する命令({\tt FAILWITH})，構造のコントロールに関する命令({\tt IF，LOOP，DIP})，
+スタックの操作に関する命令({\tt DROP，DUP，SWAP，PUSH，UNIT})，
+スタックのトップ要素の比較に関する命令({\tt EQ，NEQ，LT，GT，LE，GE})，
+Booleanに関する操作の命令({\tt OR，AND，XOR，NOT})，
+整数値に関する命令({\tt NEG，ABS，ISNAT，INT，ADD，SUB，MUL，EDIV})，
+スタックの上から2つの要素の比較命令({\tt COMPARE})，ペアに関する命令({\tt PAIR， CAR，CDR})，
+オプション値に関する命令({\tt SOME，NONE，IF\_NONE})，ユニオンに関する命令({\tt LEFT，RIGHT，IF\_LEFT})，
+リストに関する命令({\tt CONS，NIL，IF\_CONS，MAP，SIZE，ITER})，
+コントラクトに関する命令(C{\tt ONTRACT，TRANSFER\_TOKENS，AMOUNT，SOURCE})がある．
+$S$はスタックを表す．空のスタックを{\tt E}で表し，スタックに積まれた要素は\ :\ で区切る．
+空のスタックを表す{\tt E}は，要素の積まれたスタックを表すときは省略する．
+例えば，$V_1 : V_2$は$V_1 : V_2 : {\tt E}$を省略した形である．
+
+
+
 
 Michelsonのプログラムは，プログラムに対して与えられるパラメータと，ブロックチェーン上に保存されているストレージのペアを受け取り，
 このプログラムの終了後に実行される操作のリストと，
@@ -313,52 +318,52 @@ code  /* ((para1, para2), st) */
 
 以下，プログラムの内容を説明する．
 
-Michelsonプログラムのコードは，プログラムに対して与えられる引数であるparameterと，
-ブロックチェーン上に保存されているストレージの値であるstorageの型宣言から始まる．
-1行目はparameterの型が(pair int int)であること，2行目はstorageの型がintであることを宣言している．
-3行目以降はプログラムの本体であるcodeである．codeには一連の命令が記述されていて，
-この命令が初期スタックに対して順に実行されていく．以下，codeの内容について行番号ごとに説明する．
+Michelsonプログラムのコードは，プログラムに対して与えられる引数である{\tt parameter}と，
+ブロックチェーン上に保存されているストレージの値である{\tt storage}の型宣言から始まる．
+1行目は{\tt parameter}の型が({\tt pair int int})であること，2行目は{\tt storage}の型が{\tt int}であることを宣言している．
+3行目以降はプログラムの本体である{\tt code}である．{\tt code}には一連の命令が記述されていて，
+この命令が初期スタックに対して順に実行されていく．以下，{\tt code}の内容について行番号ごとに説明する．
 
 \begin{itemize}
-  \item プログラム開始時のスタックは，parameterとstorageの値のペアが空のスタックに積まれた状態で始まる．
-  parameterの値を(para1, para2)，storageの値をstと表すとすると，初期スタックは((para1, para2), st)である．
-  \item 4行目のCARは，スタックのトップの要素がペアだった場合，その要素を取り出して，
-  ペアの第1要素をスタックに積む命令である．4行目時点でのスタックは(para1, para2)である．
-  \item 5行目のDUPは，スタックのトップの要素を複製してスタックに積む命令である．
-  5行目時点でのスタックは(para1, para2) : (para1, para2)である．
-  \item 6行目は4行目と同じくCARを実行する．6行目時点でのスタックはpara1 : (para1, para2)である．
-  \item 7行目のDIPは引数として命令列bodyを受け取る命令で，スタックのトップの要素を保持した状態で，
+  \item {\tt プログラム開始時のスタックは，parameterとstorageの値のペアが空のスタックに積まれた状態で始まる．
+  parameterの値を(para1, para2)，storageの値をstと表すとすると，初期スタックは((para1, para2), st)である}．
+  \item 4行目の{\tt CAR}は，スタックのトップの要素がペアだった場合，その要素を取り出して，
+  ペアの第1要素をスタックに積む命令である．4行目時点でのスタックは{\tt (para1, para2)}である．
+  \item 5行目の{\tt DUP}は，スタックのトップの要素を複製してスタックに積む命令である．
+  5行目時点でのスタックは{\tt (para1, para2) : (para1, para2)}である．
+  \item 6行目は4行目と同じく{\tt CAR}を実行する．6行目時点でのスタックは{\tt para1 : (para1, para2)}である．
+  \item 7行目の{\tt DIPは引数として命令列bodyを受け取る命令で，スタックのトップの要素を保持した状態で，
   その要素を取り出した状態のスタックに対してbodyを実行する命令である．
   つまり，スタックのトップのpara1を保持した状態で，スタック(para1, para2)に対してCDRを実行する．
-  CDRは，スタックのトップの要素がペアの場合，その要素を取り出して，ペアの第2要素をスタックに積む命令である．
-  よって，7行目時点でのスタックはpara1 : para2である．
-  \item 8行目のADDは，スタックのトップの要素xと2番目の要素yの型が，それら2つの演算が定義されているような型である場合，
-  xとyを取り出し，x+yの値をスタックに積む命令である．例えば，xとyがともにint型ならば，x+yはint型である．
-  para1 + para2の値をst'と表すとすると，8行目時点でのスタックはst'である．
-  \item 9行目のNILは引数として型aを受け取る命令で，リストの型がaであるような空のリスト[ ]をスタックに積む命令である．
-  9行目時点でのスタックは[ ] : st'である．
-  \item 10行目のPAIRはスタックのトップの要素と2番目の要素を取り出し，それらのペアをスタックに積む命令である．
-  この命令後，スタックは([ ], st')となり，プログラムが終了する．
+  CDR}は，スタックのトップの要素がペアの場合，その要素を取り出して，ペアの第2要素をスタックに積む命令である．
+  よって，7行目時点でのスタックは{\tt para1 : para2}である．
+  \item 8行目の{\tt ADD}は，スタックのトップの要素{\tt x}と2番目の要素{\tt y}の型が，それら2つの演算が定義されているような型である場合，
+  {\tt xとyを取り出し，x+yの値をスタックに積む命令である．例えば，xとyがともにint型ならば，x+yはint型である．
+  para1 + para2の値をst'}と表すとすると，8行目時点でのスタックは{\tt st'}である．
+  \item 9行目の{\tt NILは引数として型aを受け取る命令で，リストの型がaであるような空のリスト[]}をスタックに積む命令である．
+  9行目時点でのスタックは{\tt [] : st'}である．
+  \item 10行目の{\tt PAIR}はスタックのトップの要素と2番目の要素を取り出し，それらのペアをスタックに積む命令である．
+  この命令後，スタックは{\tt ([], st')}となり，プログラムが終了する．
 \end{itemize}
 
-プログラムの終了時のスタックは，このプログラム終了後に続いて行われる操作のリストoperation listと，
+プログラムの終了時のスタックは，このプログラム終了後に続いて行われる操作のリスト{\tt operation listと，
 実行中に更新されブロックチェーンに保存されるストレージの値storage'のペアのみが積まれている状態でなければならない．
-このとき，プログラム実行前のストレージの値storageと，プログラム実行後のストレージの値storage'の型が一致している必要がある．
+このとき，プログラム実行前のストレージの値storageと，プログラム実行後のストレージの値storage'の型が一致している必要がある．}
 
 Michelsonには静的型チェックが備えられている．それぞれの命令には，
 命令の実行前と実行後のスタックの状態を型で表した型規則が存在する．
-例えば，PAIRについての型規則は以下のように表される．
+例えば，{\tt PAIR}についての型規則は以下のように表される．
 \begin{displaymath}
-  {\rm a' : b' : S'} \rightarrow {\rm pair\ a'\ b' : S'}
+  a' : b' : S' \rightarrow {\tt pair}\ a'\ b' : S'
 \end{displaymath}
-これは，実行前のスタックのトップの要素の型がa'，2番目の要素の型がb'のとき，
+これは，実行前のスタックのトップの要素の型が{\tt a'，2番目の要素の型がb'のとき，
 実行後のスタックのトップの要素がpair a' b'となることを示している．
-また，ADDについての型規則は以下のように表される．
+また，ADDについての型規則は以下のように表される．}
 \begin{displaymath}
-  {\rm int : int : S'} \rightarrow {\rm int : S'}
+  {\tt int : int} : S' \rightarrow {\tt int} : S'
 \end{displaymath}
-これは，実行前のスタックのトップの要素と2番目の要素がともにintである必要があり，
-その場合，実行後のスタックのトップの要素がintとなることを示している．
+これは，実行前のスタックのトップの要素と2番目の要素がともに{\tt intである必要があり，
+その場合，実行後のスタックのトップの要素がint}となることを示している．
 
 命令を実行する前にスタックの状態が型規則に則った形でない場合，命令は失敗する．
 これを防ぐために，プログラム実行前に静的な型チェックが行われる．
@@ -434,13 +439,13 @@ scaleは値を実際に出力する値にスケーリングする関数のよう
 
 
 
-\subsection{Resource Aware MLについて}\label{subsec-pre-raml}
-Resource Aware ML(RAML)は，一階の関数プログラムの多項式リソース消費量の境界を，
+\subsection{Resource Aware ML}\label{subsec-pre-raml}
+Resource Aware ML\ (RAML)\ は，一階の関数プログラムの多項式リソース消費量の上界を，
 静的かつ自動的に計算する関数型プログラミング言語である．
 プログラムの文法はOCamlのものを採用しており，入力としてOCamlの文法で書かれたプログラムを与えると，
 その多項式リソース境界を出力するツールとして扱うことができる．
 
-リソース消費量の分析は，ポテンシャルベースの償却解析によって行われる．
+リソース消費量の分析は，ポテンシャルベースの償却解析によって行われる\cite{amortized}．
 計算量の1つとして，同じ処理を連続で行ったときの1回あたりの計算量を償却計算量といい，
 償却計算量を求めることを償却解析といい，データ構造の状態に応じてコストが変わる一連の操作のコストを解析する手法として用いられる．
 償却解析における手法の一つとして，データ構造に対してポテンシャル$\Phi$と呼ばれる非負の数値を導入する方法がある．
@@ -461,30 +466,31 @@ Resource Aware ML(RAML)は，一階の関数プログラムの多項式リソー
   \end{center}
 \end{figure}
 
+
 \begin{comment}
 \begin{eqnarray*}
-  e &::=& ()\ {\rm |\ True\ |\ False}\ |\ n\ |\ x\ |\\
+  e &::=& ()\ {\tt |\ True\ |\ False}\ |\ n\ |\ x\ |\\
   && x_1\ binop\ x_2\ |\ f(x_1,...,x_n)\ |\\
-  && {\rm let}\ x\ =\ e_1\ {\rm in}\ e_2\ |\ {\rm if}\ x\ {\rm then}\ e_t\ {\rm else}\ e_f\ |\\
-  && (x_1,x_2)\ |\ {\rm match}\ x\ {\rm with}\ (x_1,x_2) \rightarrow e\ |\\
-  && {\rm nil\ |\ cons}(x_h,x_t)\ |\\
-  && {\rm match}\ x\ {\rm with \mbox{\boldmath |} nil} \rightarrow e_1 \mbox{\boldmath |}{\rm cons}(x_h,x_t) \rightarrow e_2\ |\\
-  binop &::=& {\rm +\ |\ -\ |\ *\ |\ mod\ |\ div\ |\ and\ |\ or} \\
-  {\rm A}&::=& {\rm unit\ |\ bool\ |\ int\ |\ L(A)\ |\ (A,A)} \\
-  {\rm F}&::=& {\rm (A,...,A) \rightarrow A}
+  && {\tt let}\ x\ =\ e_1\ {\tt in}\ e_2\ |\ {\tt if}\ x\ {\tt then}\ e_t\ {\tt else}\ e_f\ |\\
+  && (x_1,x_2)\ |\ {\tt match}\ x\ {\tt with}\ (x_1,x_2) \rightarrow e\ |\\
+  && {\tt nil\ |\ cons}(x_h,x_t)\ | \\
+  && {\tt match}\ x\ {\tt with} \mbox{\textbf |} {\tt nil} \rightarrow e_1 \mbox{\textbf |}{\tt cons}(x_h,x_t) \rightarrow e_2 \\
+  binop &::=& {\tt +\ |\ -\ |\ *\ |\ mod\ |\ div\ |\ and\ |\ or} \\
+  A&::=& {\tt unit\ |\ bool\ |\ int\ |\ L}(A)\ |\ (A,A) \\
+  F&::=& (A,...,A) \rightarrow A
 \end{eqnarray*}
 \end{comment} 
 
 図\ref{image2} にRAMLの文法を示す．$e$はRAMLプログラム上の式を表していて，
-Unit値()，Boolean値True，False，整数値$n$，変数$x$，変数$x_1$と$x_2$の演算，
+Unit値()，Boolean値{\tt True，False}，整数値$n$，変数$x$，変数$x_1$と$x_2$の演算，
 関数適用，let式を用いた局所関数を伴う式，ifによる条件分岐式，変数$x_1$と$x_2$のペア，
-ペアに対するmatch式，空リストnil，リストの結合を表すcons$(x_h,x_t)$，リストに対するmatch式がある．
-演算子$binop$には，整数値に対する演算である+，-，*，mod，div，
-Boolean値に対する演算であるand，orがある．
-AとFは，RAMLプログラム上でのsimple typeを表している．
-Aはデータ型で，Unit型のunit，Boolean型のbool，整数型のint，simple typeの値のリスト，
+ペアに対するmatch式，空リスト{\tt nil，リストの結合を表すcons}$(x_h,x_t)$，リストに対するmatch式がある．
+演算子$binop$には，整数値に対する演算である{\tt +，-，*，mod，div}，
+Boolean値に対する演算である{\tt and，or}がある．
+$A$と$F$は，RAMLプログラム上でのsimple typeを表している．
+$A$はデータ型で，Unit型の{\tt unit}，Boolean型の{\tt bool}，整数型の{\tt int}，simple typeの値のリスト，
 simple typeの値のペアがある．
-Fは関数型で，simple typeの値を受け取ってsimple typeの値を返す関数型を表している．
+$F$は関数型で，simple typeの値を受け取ってsimple typeの値を返す関数型を表している．
 また，RAML上のwell-typedな式を，このsimple typeが割り当てられた式と定義している．
 
 RAMLプログラムは，関数宣言のリストとmain式からなる．関数宣言は，関数の型宣言または関数の定義である．
@@ -493,14 +499,14 @@ RAMLプログラムは，関数宣言のリストとmain式からなる．関数
 
 
 RAMLのリソース消費量の分析は，入力されたプログラムの，
-big-step operational semanticsによる各評価ステップに対して一定のコストを割り当てるメトリックによって，
+big-step operational semanticsによる各評価ステップに対して一定のコストを割り当てるメトリックによって\cite{raml}，
 リソース消費量の計算を行う．
 メトリックは以下の4つが存在する．
 \begin{itemize}
   \item heapメトリックは，実行時に割り当てられたヒープセルの数を計算する．
   \item stepsメトリックは，実行時の評価ステップ数を計算する．
-  \item tickメトリックは，ユーザーが定義したtick関数によるtick値を計算する．
-  ユーザーは関数の定義中にRaml.tick(1.0)のような関数(tick関数)を呼び出すことができる．
+  \item tickメトリックは，ユーザーが定義したリソース消費であるtick値を計算する．
+  ユーザーは関数の定義中に{\tt Raml.tick(1.0)}のような関数(tick関数)を呼び出すことができる．
   tick関数は呼び出される度に，引数のfloat値に等しいリソース消費(tick値)が発生する．
   \item flipsメトリックは，フリップ関数によるフリップ数を計算する．
   本論文では扱わないため，詳細な説明は省略する．
@@ -535,25 +541,24 @@ let rec quicksort gt = function
 let _ = quicksort (fun a b -> a <= b)  [9;8;7;6;5;4;3;2;1]
 \end{lstlisting}
 
-見てわかる通り，プログラムのコードの見た目はOCamlに近いが，20行目のlet \_ = ...の部分はOCamlには見られない表現である．
-この式がmain式で，リソース消費量の分析の対象となる．
-このプログラムは，append，partition，quicksortの3つの関数を定義し，
-main式はquicksortの関数適用が記述されている．
+20行目の{\tt let \_ =} ...の部分はmain式を表していて，リソース消費量の分析の対象となる．
+このプログラムは，{\tt append，partition，quicksort}の3つの関数を定義し，
+main式は{\tt quicksort}の関数適用が記述されている．
 
-1-4行目のappend関数は，2つのリストl1,l2を引数として受け取り，
+1-4行目の{\tt append}関数は，2つのリスト{\tt l1,l2}を引数として受け取り，
 それらを結合したリストを返す関数である．
-6-12行目のpartition関数は，リストlと，lの要素の型の値を受け取ってbool型の値を返す関数fを引数として受け取り，
-lの要素をfに関数適用したときの返り値によって2つのリストに分割する関数である．
-11行目にtick関数であるRaml.tick(1.0)があり，結果としてlの要素の数だけ1.0のtick値が発生する．
-14-18行目のquicksort関数は，リストlと，lの要素の型の値を2つ受け取ってbool型の値を返す関数gtを引数として受け取り，
-lに対してクイックソートを実行する関数である．quicksortの定義中にappendとpartitionが用いられている．
+6-12行目の{\tt partition関数は，リストlと，lの要素の型の値を受け取ってbool型の値を返す関数fを引数として受け取り，
+lの要素をf}に関数適用したときの返り値によって2つのリストに分割する関数である．
+11行目にtick関数である{\tt Raml.tick(1.0)があり，結果としてl}の要素の数だけ1.0のtick値が発生する．
+14-18行目の{\tt quicksort関数は，リストlと，l}の要素の型の値を2つ受け取って{\tt bool型の値を返す関数gtを引数として受け取り，
+lに対してクイックソートを実行する関数である．quicksortの定義中にappendとpartition}が用いられている．
 
 RAMLのプログラムの実行において，主にevaluationとanalysisの2つの操作がある．
 
 evaluationは，プログラムの評価を行い，main式の評価結果の返り値を出力する．
 また，先述した4つのメトリックによるリソース消費量を計算し出力する．
-evaluationは，./main eval [prog.raml]というコマンドによって実行される．
-ここでprog.ramlは入力として用いるプログラムファイルである．
+evaluationは，{\tt ./main eval [prog.raml]というコマンドによって実行される．
+ここでprog.raml}は入力として用いるプログラムファイルである．
 
 quicksort.ramlを入力としてevaluationを実行した結果を以下に示す．
 
@@ -578,29 +583,28 @@ Evaluating expression ...
 
 \end{lstlisting}
 
-11-12行目に，main式の評価の返り値として，リスト[9;8;7;6;5;4;3;2;1]が正しくソートされた値が出力されている．
+11-12行目に，main式の評価の返り値として，リスト{\tt [9;8;7;6;5;4;3;2;1]}が正しくソートされた値が出力されている．
 また，14-17行目に，上からsteps，ticks，heap，flipsと，
 それぞれのメトリックによって計算されたリソース消費量の値が出力されている．
 
 analysisは，指定されたメトリックに則ってプログラムのリソース消費量の範囲の解析を実行する．
 解析の結果として，リソース消費量の範囲が，入力されたプログラムに依存する変数の多項式として出力される．
 出力される範囲は，リソース消費量の上限，下限，または上限と下限が一致した定数リソース境界から選ぶことができる．
-analysisは，./main analyze [mode] <metric> [<d1>] <d2> [-print (all | none | consume | level <lev> )] [-m] [prog.raml] [func\_name]というコマンドで実行される．
-ここで，<>は指定必須のオプションで，[]は任意のオプションである．
+analysisは，{\tt ./main analyze [mode] <metric> [<d1>] <d2> [-print (all | none | consume | level <lev>)] [-m] [prog.raml]} \\ {\tt [func\_name]}というコマンドで実行される．
+ここで，{\tt <>は指定必須のオプションで，[]は任意のオプションである．
 modeは出力される境界のタイプをupper，lower，constantから選ぶ．指定しない場合はupperとなる．
 metricは分析に用いるメトリックをheap，steps，ticks，flipsから選ぶ．
 d1およびd2は，リソース消費量の境界の次数を指定する．分析は次数がd1,d1+1,...,d2の範囲で行われ，
 出力される多項式もその範囲の次数となる．d1を指定しない場合，d1=d2として扱われる．
 -printはプログラムにおいて実行された関数の型を出力する．-printにもいくつかのオプションがあり，
 -print allは実行されたすべての関数の型を出力する．-print noneは型の出力をしない．
--print consumeは消費関数（？）の型を出力する．
 -print level <lev>は式を構文木として見た際に深さが<lev>以下の関数の型を出力する．
 -mは，指定するとモジュールモードとなり，main式の代わりにトップレベルで定義された関数の型をすべて出力する．
 prog.ramlは入力として用いるプログラムファイルである．
-func\_nameはモジュールモードでのみ指定することができるオプションで，指定した関数についてのみ型を出力する．
+func\_name}はモジュールモードでのみ指定することができるオプションで，指定した関数についてのみ型を出力する．
 
-quicksort.ramlを入力として，mode=upper，metric=steps，d1=1，d2=4，
--print level 1とオプションを設定してanalysisを実行した結果を以下に示す．
+quicksort.ramlを入力として，{\tt mode=upper，metric=steps，d1=1，d2=4，}
+{\tt -print level 1}とオプションを設定してanalysisを実行した結果を以下に示す．
 
 \begin{lstlisting}[basicstyle={\ttfamily\color{base}\scriptsize}]
 $ ./main analyze steps 1 4 -print level 1 examples/quicksort.raml
@@ -644,10 +648,10 @@ Analyzing expression ...
   #Constraints:  638
 \end{lstlisting}
 
-11行目にTrying degree: 1,2とあるが，指定された次数の1,2,3,4の低い値から順に分析を行い，
+11行目にTrying degree: 1，2とあるが，指定された次数の1，2，3，4の低い値から順に分析を行い，
 次数が2のときに分析が成功したことを示している．指定された次数において分析が成功しない場合，その旨がエラーメッセージで表示される．
-15-29行目には，main式で用いられた関数quicksortの分析の結果が示されている．
-17行目にquicksortの型が示されている．[]中の型が引数の型で，複数ある場合は;で区切られている．
+15-29行目には，main式で用いられた関数{\tt quicksort}の分析の結果が示されている．
+17行目に{\tt quicksortの型が示されている．[]中の型が引数の型で，複数ある場合は;}で区切られている．
 19-22行目に，引数のポテンシャル注釈が引数のデータ構造ごとに示されている．
 このポテンシャル注釈に関する情報を多項式に変換したものが，26-29行目に示されている．
 そして，33行目にmain式の上界の値が出力され，35-39行目に分析のオプションや計算時間，計算量が出力されている．
@@ -673,7 +677,7 @@ Analyzing expression ...
 
 \subsection{文法} \label{subsec-pro-grammar}
 Michelsonの文法は，すでに第\ref{subsec-pre-tezos}節で示した．Michelsonの文法をライブラリで設計するにあたって，
-スタックの要素をOCamlのヴァリアント型を用いて表す．Code\ref{code3}に実装したヴァリアント型tを示す．
+スタックの要素をOCamlのヴァリアント型を用いて表す．Code\ref{code3}に実装したヴァリアント型{\tt t}を示す．
 
 \begin{lstlisting} [language=caml, caption=スタックの要素を表すヴァリアント型, label=code3]
 type t =
@@ -684,63 +688,64 @@ type t =
 \end{lstlisting}
 
 
-ヴァリアント型tのコンストラクタとして，int型のInt，nat型のNat，mutez型のMutez，bool型のBool，
+ヴァリアント型{\tt tのコンストラクタとして，int型のInt，nat型のNat，mutez型のMutez，bool型のBool，
 address型のAddress，unit型のUnit，option型のMNone，MSone，list型のLNil，LCons，
-operation型のOperation，contract型のContract，pair型のPair，or型のLeft，Rightがある．
-Natの引数の型であるRnat.tは，RAMLに用意されている自然整数を表す型で，四則演算と，nが0か1以上かで分岐する条件分岐関数が用意されている．
-Operation，Address，Contractについては，簡略化のために引数をとらない単一のコンストラクタとして扱う．
-また，list型の要素を設計するにあたって，先述したようにRAMLにおいて複雑な帰納的データ型の実装には制限があり，
-ヴァリアント型tのコンストラクタとして，t list型の値を引数にとるコンストラクタを宣言することができない．
+operation型のOperation，\\contract型のContract，pair型のPair，or型のLeft，Rightがある．
+Natの引数の型であるRnat.tは，RAMLに用意されている自然数を表す型で，
+四則演算add，mult，minus，div\_modと，n}が0か1以上かで分岐する条件分岐関数{\tt ifz}が用意されている．
+{\tt Operation，Address，Contractについては，簡略化のために引数をとらない単一のコンストラクタとして扱う．
+また，list}型の要素を設計するにあたって，先述したようにRAMLにおいて複雑な帰納的データ型の実装には制限があり，
+ヴァリアント型{\tt tのコンストラクタとして，t list型の値を引数にとるコンストラクタを宣言することができない．
 その代替として，空リストを表すLNilと，リストの要素と元のリストを引数としてリストの結合を表すLConsをコンストラクタとして宣言する．
-なお，このヴァリアント型の設計上，LConsの2つ目の引数は型tの値であればよい，とされているが，
+なお，このヴァリアント型の設計上，LCons}の2つ目の引数は型{\tt tの値である，とされているが，
 コントラクトを模倣するプログラムの実行において，
-LConsの2つ目の引数がLNilまたはLConsとなるように命令の関数が定義されている．
+LCons}の2つ目の引数が{\tt LNilまたはLConsとなるように命令の関数が定義されている．
 
-このヴァリアント型tを用いて，スタックを型tのリストとして設計することができる．
+このヴァリアント型tを用いて，スタックを型t}のリストとして設計することができる．
 
 \subsection{命令} \label{subsec-pro-instr}
 Michelsonの命令は，スタックを受け取り，そのスタックの内容を書き換える操作として実装されている．
 この挙動を模倣する関数を，第\ref{subsec-pro-grammar}節で設計した文法において，
-スタックに相当するリストを受け取って，書き換え後のスタックを返すような(t list->t list)型をもつ関数として定義する．
+スタックに相当するリストを受け取って，書き換え後のスタックを返すような{\tt (t list $\rightarrow$ t list)}型をもつ関数として定義する．
 
 
 以下，実装した関数のうち，特筆すべきものについて説明する.
 \begin{itemize}
-  \item FAILWITHは例外Invalid\_argumentを発生させる関数として定義する．
-  \item pは1.0のtick値を発生させる関数で，Michelsonプログラムでの\ \{，\}\ をこれに置換する．
+  \item {\tt FAILWITHは例外Invalid\_argumentを発生させる関数として定義する．
+  \item p}は1.0のtick値を発生させる関数で，Michelsonプログラムでの{\tt \{,\}}をこれに置換する．
   後述するtickメトリックによるによるガス消費量の見積もりにおいて用いる．
-  \item 中置演算子|>は，引数として受け取った2つの関数f，gを，引数のスタックに対して続けて適用する演算子である．
+  \item 中置演算子{\tt |>は，引数として受け取った2つの関数f，g}を，引数のスタックに対して続けて適用する演算子である．
   Michelsonにおける命令のシーケンスに相当する役割をもつ．
-  \item LOOPはMichelsonの挙動を再現すると解析が難しくなるため，
-  挙動を簡単なものにしている．具体的には，引数としてRnat.t型の引数nを受け取って，
+  \item {\tt LOOP}はMichelsonの挙動を再現すると解析が難しくなるため，
+  挙動を簡単なものにしている．具体的には，引数として{\tt Rnat.t型の引数nを受け取って，
   スタックのトップの要素に関わらず，引数の命令シーケンスをn回残りのスタックに適用する関数として定義する．
-  20行目のRnat.ifzは，1つ目の引数のRnat.t型の値nが0ならば2つ目の引数の関数を，
-  nが1以上ならばn'=n-1として3つ目の引数の関数を適用する条件分岐関数である．
-  \item DIPは，スタックのトップを保持して，残りのスタックに対して引数の命令のシーケンスを適用する関数として定義する．
+  20行目のRnat.ifz}は，1つ目の引数の{\tt Rnat.t型の値n}が0ならば2つ目の引数の関数を，
+  {\tt n}が1以上ならば${\tt n'=n-1}$として3つ目の引数の関数を適用する条件分岐関数である．
+  \item {\tt DIPは，スタックのトップを保持して，残りのスタックに対して引数の命令のシーケンスを適用する関数として定義する．
   \item PUSHは，受け取った要素をスタックに積む命令として定義するが，
   積む要素の型の指定はなく，値のみを引数として受け取る．
-  \item ADD，SUB，MUL，EDIVは，それぞれスタックのトップと2番目の要素を取り出し，整数値の演算結果をスタックに積む関数として定義する．
-  命令にもよるが，スタックのトップと2番目の要素の型として，Int同士，Nat同士，IntとNat，Mutez同士，MutezとNatといったパターンがあり，
+  \item ADD，SUB，MUL，EDIV}は，それぞれスタックのトップと2番目の要素を取り出し，整数値の演算結果をスタックに積む関数として定義する．
+  命令にもよるが，スタックのトップと2番目の要素の型として，{\tt Int同士，Nat同士，IntとNat，Mutez同士，MutezとNatといったパターンがあり，
   パターンに応じて演算結果の要素の型が決まるので，パターンマッチングによって分ける．
-  また，EDIVではスタックの2番目の要素が0かそうでないかで条件分岐を行い，
+  また，EDIV}ではスタックの2番目の要素が0かそうでないかで条件分岐を行い，
   スタックに積む要素の型は値のペアのオプション型となる．
-  \item COMPAREはスタックのトップと2番目の要素の比較を行い，トップの要素の方が大きい場合はInt 1を，
-  2番目の要素の方が大きい場合はInt -1を，等しい場合はInt 0をスタックに積む関数として定義する．
+  \item {\tt COMPARE}はスタックのトップと2番目の要素の比較を行い，トップの要素の方が大きい場合は{\tt Int 1}を，
+  2番目の要素の方が大きい場合は{\tt Int -1を，等しい場合はInt 0をスタックに積む関数として定義する．
   Int，Nat，Mutezについて比較を行うことができるが，違う型同士の比較はできない．
-  \item NONE，LEFT，RIGHT，NILについて，Michelsonの定義では
+  \item NONE，LEFT，RIGHT，NIL}について，Michelsonの定義では
   それぞれオプション値，ユニオン，リストの中身の型を引数で指定する必要があるが，
   本ライブラリの関数の定義では型指定はしない．
-  \item MAP，SIZE，ITERはリストに対する再帰を行う命令で，
+  \item{\tt MAP，SIZE，ITERはリストに対する再帰を行う命令で，
   本ライブラリにおいてはスタックの要素が命令に合致している場合に，それぞれ対応した補助関数を呼び出す関数として定義し，
   その補助関数においてリストの再帰を行う．
-  \item TRANSFER\_TOKENS，CONTRACT，SOURCE，AMOUNTといったコントラクトに関する命令は，
+  \item TRANSFER\_TOKENS，CONTRACT，SOURCE，AMOUNT}といったコントラクトに関する命令は，
   本ライブラリではコントラクトに紐づけられたアドレスや通貨量などの情報を管理することができないので，
   それらの情報を簡略化したスタック操作のみを行う関数として定義する．
 \end{itemize}
 
 \subsection{ライブラリを用いたプログラム} \label{subsec-pro-pro}
-Michelsonのプログラムでは，プログラムに与えられるparameterと，ブロックチェーン上に保存されているstorageの型宣言から始まり，
-parameterとstorageのペアが積まれた初期スタックに対して，一連の命令が順番に実行される．
+Michelsonのプログラムでは，プログラムに与えられる{\tt parameterと，ブロックチェーン上に保存されているstorageの型宣言から始まり，
+parameterとstorage}のペアが積まれた初期スタックに対して，一連の命令が順番に実行される．
 このプログラムの挙動を模倣するRAMLのプログラムを，設計したライブラリを用いて，
 初期スタックのリストに対して関数を順に適用するプログラムとして実装する．
 
@@ -758,11 +763,11 @@ let _ =
   (Pair (Pair (Int 3, Int 5),  Int 0) :: []))))))))
 \end{lstlisting}
 
-プログラムの設計上，Michelsonプログラムと記述の順番が逆になっていて読みにくいことをご了承されたい．
-Michelsonプログラムではparameterとstorageの型宣言から始まるが，
+プログラムの設計上，Michelsonプログラムと記述の順番が逆になっていることに注意してほしい．
+Michelsonプログラムでは{\tt parameterとstorage}の型宣言から始まるが，
 RAMLプログラムでは初期スタックの値を宣言し，それに対して命令に相当する関数を順に適用する．
-5行目のdip1の引数となる命令シーケンスは，命令と命令の間を|>で繋ぐことによって表す．
-また，シーケンスの最初と最後は\ \{，\}\ に相当するpを記述する．
+5行目の{\tt dip1の引数となる命令シーケンスは，命令と命令の間を|>で繋ぐことによって表す．
+また，シーケンスの最初と最後は\{，\}に相当するp}を記述する．
 
 このプログラムのevaluationを実行した結果を以下に示す．
 
@@ -787,7 +792,7 @@ Evaluating expression ...
   Flips:            0.00
 \end{lstlisting}
 
-11-13行目に，操作のリストと，parameterとして受け取った整数値の和のペアが入ったスタックが返り値として示されている．
+11-13行目に，操作のリストと，{\tt parameter}として受け取った整数値の和のペアが入ったスタックが返り値として示されている．
 
 
 \subsection{tickメトリックによるガス消費量の見積もり} \label{subsec-pro-gas}
@@ -799,13 +804,12 @@ Evaluating expression ...
 コントラクトの実行において発生するガスの消費量は8つのコストに分けられていて，それぞれ計算方法が異なる．
 ゆえに，コントラクトの実行コスト全体を見積もることは難しいと判断し，
 8つのコストのうちの一つであるinterpreter costの見積もりを行うことにした．
-interpreter costを選んだ理由として，コストとしての大きさが他のコストより小さいこと，
-命令毎にコストが設定されているので，後述する方法による見積もりがしやすいことが挙げられる．
+interpreter costを選んだ理由として，命令毎にコストが設定されているので，後述する方法による見積もりがしやすいことが挙げられる．
 
-コントラクトのinterpreter costを調べるにあたって，run script <src> on storage <storage> and input <input> --trace-stack [--gas <gas>]というコマンドを実行し，ガス消費の推移を調べるという方法を用いる．
+コントラクトのinterpreter costを調べるにあたって，{\tt run script <src> on storage <storage> and input <input> --trace-stack [--gas <gas>]というコマンドを実行し，ガス消費の推移を調べるという方法を用いる．
 これは，プログラムファイル<src>のスクリプトを，parameterを<input>，storageを<storage>とした上で実行するコマンドで，
---trace-stackというオプションをつけることで1ステップ毎のスタックの状態，ガスの残量（使用許容量-消費量）が出力される．
---gas <gas>はスクリプト開始時のガスの使用許容量を指定できるオプションである．
+--trace-stack}というオプションをつけることで1ステップ毎のスタックの状態，ガスの残量（使用許容量-消費量）が出力される．
+{\tt --gas <gas>}はスクリプト開始時のガスの使用許容量を指定できるオプションである．
 
 Code\ref{code1}に示したプログラムexample1.tzについてrun scriptを実行した結果を以下に示す．
 
@@ -844,15 +848,15 @@ trace
     [ (Pair {} 8)  	 ]
 \end{lstlisting}
 
-6行目のtrace以降の出力で，1ステップ毎のスタックの状況，ガス残量が示されている．
-開始時のガス許容量を100000unitsと指定していてるが，
+6行目の{\tt trace}以降の出力で，1ステップ毎のスタックの状況，ガス残量が示されている．
+開始時のガス許容量を{\tt 100000units}と指定していてるが，
 最初の出力でいくらか減っていることから，reading cost，deserialization cost，parsing cost，type comparison costが消費された時点のガス残量が示されていると考えられる．
 このガス残量から，最後の出力時点でのガス残量を引いた値がinterpreter costであると考えられる．
-trace以降を見てみると，locationはプログラムの実行の進行度合いを示す値で，例えば7-10行目を見てみると，
-locationが8から9になり，最初の命令であるCARが実行されてスタックが書き換えられ，ガスが3units消費されていることがわかる．
-ここからCAR命令のinterpreter costが3unitsであると推測できる．
-また，17-23行目ではDIP \{CDR\} が実行されているが，
-命令のシーケンスなどにおいて\{，\}を読み込むとガスが1units消費されていることがわかる．
+{\tt trace以降を見てみると，location}はプログラムの実行の進行度合いを示す値で，例えば7-10行目を見てみると，
+{\tt locationが8から9になり，最初の命令であるCARが実行されてスタックが書き換えられ，ガスが3units消費されていることがわかる．
+ここからCAR命令のinterpreter costが3units}であると推測できる．
+また，17-23行目では{\tt DIP \{CDR\} が実行されているが，
+命令のシーケンスなどにおいて\{，\}を読み込むとガスが1units}消費されていることがわかる．
 これがinterpreter costに含まれるかどうかは定かではないが，この消費量も含めて見積もることとする．
 以上の例に倣って，様々なMichelsonプログラムについてrun scriptコマンドを実行し，各命令のinterpreter costを調べた．
 
@@ -862,11 +866,11 @@ locationが8から9になり，最初の命令であるCARが実行されてス�
 
 以下，tick関数によって正確にinterpreter costを見積もることのできない命令について述べる．
 \begin{itemize}
-  \item ADD，SUB，MUL，EDIVの整数値の演算の命令におけるinterpreter costは，スタックの要素の整数値の絶対値に依存していて，
+  \item {\tt ADD，SUB，MUL，EDIV}の整数値の演算の命令におけるinterpreter costは，スタックの要素の整数値の絶対値に依存していて，
   \footnote{2つの整数値の絶対値のうち大きい方を$n$とすると，$\log_2 n$に比例する．}，
   それをtick関数で表すことはできなかった．ライブラリの命令においては，
   スタックの要素にに関わらず一定のtick値を発生するように定義されている．
-  \item CONTRACT命令のinterpreter costは，例外的に10000units以上となっており，
+  \item {\tt CONTRACT}命令のinterpreter costは，例外的に{\tt 10000units}以上となっており，
   さらに対象となるアドレスによって増減するため，設計したライブラリにおいて見積もるには情報が不十分であった．
   ライブラリの命令においては，12000.0のtick値を発生するように定義されている．
 \end{itemize}
@@ -878,10 +882,10 @@ tickメトリックによる解析を行い，interpreter costの見積もりを
 
 \begin{description}
   \item [example1.tz] Code\ref{code1}で示したプログラム．
-  \item [example2.tz] parameterとして受け取った整数値を0になるまで1ずつ減算して，ストレージに書き込む．コードをCode\ref{code5}に示す．
-  \item [example3.tz] parameterとして受け取った整数値が0より大きいなら1，0以下なら-1をストレージに書き込む．コードをCode\ref{code6}に示す．
-  \item [example4.tz] parameterとして受け取った整数値のリストの，要素の和をストレージに書き込む．コードをCode\ref{code7}に示す．
-  \item [example5.tz] sourceと呼ばれる取引が始まった実行の起点のアカウントへ受け取った通貨を送金し返す．コードをCode\ref{code8}に示す．
+  \item [example2.tz] {\tt parameter}として受け取った整数値を0になるまで1ずつ減算して，ストレージに書き込む．コードをCode\ref{code5}に示す．
+  \item [example3.tz] {\tt parameter}として受け取った整数値が0より大きいなら1，0以下なら-1をストレージに書き込む．コードをCode\ref{code6}に示す．
+  \item [example4.tz] {\tt parameter}として受け取った整数値のリストの，要素の和をストレージに書き込む．コードをCode\ref{code7}に示す．
+  \item [example5.tz] {\tt source}と呼ばれる取引が始まった実行の起点のアカウントへ受け取った通貨を送金し返す．コードをCode\ref{code8}に示す．
 \end{description}
 
 \begin{lstlisting} [language=michelson, caption=example2.tz, label=code5]
@@ -950,20 +954,20 @@ derived upper boundはRAMLプログラムの解析の結果として得られた
 \end{table}
 
 example1.ramlとexample2.ramlの解析結果については，interpreter costとderived upper boundに多少の開きがあるが，
-これは，ADD命令のinterpreter costがスタックの要素の整数値の絶対値によって変動する点が
+これは，{\tt ADD}命令のinterpreter costがスタックの要素の整数値の絶対値に依存している点が
 RAMLの解析において考慮されてないことに起因していて，それを除けば正しく見積もることができたと言える．
 example4.ramlについては解析自体が正しく行われなかった．
-これは，リストに対する再帰を行う命令であるITER命令がプログラムに含まれていたことが原因であると考えられる．
-example5.ramlはCONTRACT命令を含んだプログラムで，正確な解析はできないと先述したが，
-このプログラムにおけるCONTRACT命令のinterpreter costが12000unitsであったため，解析結果として正しい上界が得られた．
+これは，リストに対する再帰を行う命令である{\tt ITER}命令がプログラムに含まれていたことが原因であると考えられる．
+example5.ramlは{\tt CONTRACT命令を含んだプログラムで，正確な解析はできないと先述したが，
+このプログラムにおけるCONTRACT}命令のinterpreter costが12000unitsであったため，解析結果として正しい上界が得られた．
 
-example4.ramlの解析に関して，以下に示すようなiter\_listの関数適用のみを行うプログラムついての解析は行うことができる．
+example4.ramlの解析に関して，以下に示すような{\tt iter\_list}の関数適用のみを行うプログラムついての解析は行うことができる．
 \begin{lstlisting} [language=caml]
 let _ =
   iter_list (p |> add |> p) (LCons (Int 1, LCons (Int 2, LCons (Int 3, LCons (Int 4, LNil)))) :: Int 0 :: [])
 \end{lstlisting}
 このプログラムの解析結果として得られる上界が32.00であることから，
-以下のようにexample4.ramlのiter\_listの部分を置き換えることで，プログラムの解析を行うことができる．
+以下のようにexample4.ramlの{\tt iter\_list}の部分を置き換えることで，プログラムの解析を行うことができる．
 \begin{lstlisting} [language=caml]
 let f s = Raml.tick(32.0); Int 10 :: []
 
@@ -976,11 +980,21 @@ let _ =
   (Pair (LCons (Int 1, LCons (Int 2, LCons (Int 3, LCons (Int 4, LNil)))), Int 0) :: []))))))
 \end{lstlisting}
 
-しかし，example4.ramlのようなiter\_listを含む関数を連続適用するプログラムについて解析が正しく行われなかった点については，
+しかし，example4.ramlのような{\tt iter\_list}を含む関数を連続適用するプログラムについて解析が正しく行われなかった点については，
 詳細な原因はわからなかった．
 
 \section{関連研究} \label{sec-relate}
-\textcolor{red}{(あとで書く．)}
+スマートコントラクトを対象とした静的な解析は，本研究で示したガス消費量の解析の他にも様々な目的で研究されている．
+その中でも，ブロックチェーン技術が幅広い用途に利用されるにつれ，スマートコントラクトが扱うデータの重要性も高まっており，
+大量の通貨をスマートコントラクト上で取り扱うため，プログラムを静的かつ形式的に検証する手法への需要が高まっている．
+
+西田・齋藤らは，Tezosのスマートコントラクト言語Michelsonの静的型検証ツールHelmholtzを開発した．
+Helmholtzの開発にあたって，Mihchelsonのための篩型システムを単純型システムの拡張として実装している．
+この篩型システムは，スタックの型に対して条件を付けるシステムである．
+Helmholtzは，篩型の形式で表現され，ユーザーの定義した注釈が付けられたMichelsonプログラムを受け取る．
+次に，篩型システムに基づく仕様の注釈の入ったプログラムに対する型検査が行われ，
+型検査中に生成された検証条件はSMTソルバであるZ3によって検証される．
+コードは正しく型付けされているならばプログラムは仕様を満たすことが保証される．
 
 \section{結論}\label{sec-conclusion}
 \subsection{結論} \label{subsec-conclusion-conclusion}
@@ -1000,8 +1014,8 @@ interpreter costを正しく見積もることができた．
 正しくinterpreter costの見積もりを行うことは難しかった．
 
 \subsection{今後の課題} \label{subsec-conclusion-work}
-本研究では，Michelsonに実装されている命令のうち主要な命令についてRAMLライブラリで扱えるように実装した．
-一方，setやmap，関数などの型が実装されておらず，それらに関連する命令も実装されていない．
+本研究では，Michelsonに実装されている命令のうち主要な命令についてRAMLライブラリで扱えるように実装した一方で，
+setやmap，関数などの型は実装しておらず，それらに関連する命令も実装されていない．
 本ライブラリにおいてより多くのプログラムを扱えるように，実装を進めていく予定である．
 また，リストの再帰を行う命令を含むコントラクトの解析が正しく行えなかった点について，リスト型の実装方法に問題があった可能性がある．
 これを正しく解析できるようにするために，実装体系を見直すことも検討している．
@@ -1014,7 +1028,6 @@ interpreter costはコントラクトの実行コスト全体のごく一部に�
 
 \acknowledgments
 本報告書の執筆にあたり，多くの方々に支援いただきました．
-
 本研究に取り組むにあたって，研究テーマを提示していただき，終始適切な助言を賜り，丁寧に指導して下さった末永幸平准教授に心より感謝いたします．
 また，TezosやMichelsonの体系や様々な知識について解説して頂いた古瀬淳氏と，基本的なMichelsonコードを提供して頂いた斉藤大聖氏に感謝いたします．
 そして，本報告書の執筆にあたって，添削や助言を頂いた五十嵐淳教授，和賀正樹助教をはじめ，多くの助言を頂いた五十嵐・末永研究室の皆様に深く感謝いたします．

@@ -411,6 +411,13 @@ INPUT /Users/onoyuto/Documents/kuisthesis2020/main.toc
 INPUT /Users/onoyuto/Documents/kuisthesis2020/main.toc
 INPUT /Users/onoyuto/Documents/kuisthesis2020/main.toc
 OUTPUT /Users/onoyuto/Documents/kuisthesis2020/main.toc
+INPUT /Users/onoyuto/Documents/kuisthesis2020/image1.png
+INPUT /Users/onoyuto/Documents/kuisthesis2020/image1.png
+INPUT /Users/onoyuto/Documents/kuisthesis2020/image1.png
+INPUT extractbb -B cropbox -O image1.png
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmtt12.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/tmin10.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/ptex-fonts/standard/min10.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/txfonts/t1xtt.tfm
@@ -445,6 +452,9 @@ INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/txfonts/t1xtt.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/newpx/zpl-Regular-tlf-t1.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm
+INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/cm/cmtt8.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam7.tfm
 INPUT /usr/local/texlive/2020/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam5.tfm
