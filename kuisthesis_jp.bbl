@@ -1,0 +1,38 @@
+\begin{thebibliography}{1}
+
+\bibitem{art1}
+Caplener, H.~D. and Janku, J.~A.: Improved Modeling of Computer Hardware
+  Systems, {\em Computer Design\/},  Vol.~12, pp.\ 59--64 (1973).
+
+\bibitem{art2}
+Beizer, B.: Towards a New Theory of Sequential Switching Networks, {\em IEEE
+  Trans. Computers\/},  Vol.~C--19, pp.\ 936--956 (1970).
+
+\bibitem{art3}
+村上伸一: 微分方程式の解曲線の表示, 情報処理,  Vol.~14, pp.\ 231--238 (1970).
+
+\bibitem{art4}
+平井有三, 福島邦彦: 両眼視差抽出機構の神経回路網モデル, 信学論(D),  Vol.~56--D,
+  pp.\ 465--472 (1973).
+
+\bibitem{inproceedings1}
+Baraff, D.: Curved Surfaces and Coherence for Non-penetrating Rigid Body
+  Simulation, {\em SIGGRAPH '90 Proceedings\/} (Beach, R.~J.(ed.)), Dallas,
+  Texas, ACM, Addison-Wesley, pp.\ 19--28 (1990).
+
+\bibitem{inproceedings2}
+對馬雄次ほか: ボリュームレンダリング専用並列計算機のアーキテクチャ,
+  並列処理シンポジウムJSPP'94, pp.\ 89--96 (1994).
+
+\bibitem{book1}
+Barnett, S. and Storey, C.: {\em Matrix Methods in Stablity Theory\/}, Nelson,
+  London (1970).
+
+\bibitem{book2}
+J.~E.ホップクロフト, J.~D.ウルマン（木村, 野崎訳）: 言語理論とオートマトン,
+  サイエンス社, chapter~6 (1972).
+
+\bibitem{book3}
+寺沢寛一: 自然科学者のための数学概論, 岩波書店, pp.\ 325--328 (1955).
+
+\end{thebibliography}

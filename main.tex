@@ -1,25 +1,25 @@
 \documentclass{kuisthesis}
 \usepackage{listings}
-\usepackage[dvipdfmx]{color}
+\usepackage[dvipsnames]{xcolor}
 \usepackage{amsmath,amssymb}
 \usepackage{comment}
 \usepackage[dvipdfmx]{graphicx}
 
-\definecolor{base}{gray}{0} %black
-\definecolor{comment}{rgb}{0.52,0.60,0.00} %green
-\definecolor{string}{rgb}{0.83,0.21,0.51} %magenta
-\definecolor{keyword1}{rgb}{0.15,0.55,0.82} %blue
-\definecolor{keyword2}{rgb}{0.80,0.29,0.09} %orange
-\definecolor{keyword3}{rgb}{0.71,0.54,0.00} %yellow
-\definecolor{keyword4}{rgb}{0.42,0.44,0.77} %violet
+\definecolor{base}{gray}{0}
+\definecolor{comment}{named}{Green}
+\definecolor{string}{named}{Red}
+\definecolor{keyword1}{named}{Cyan}
+\definecolor{keyword2}{named}{Magenta}
+\definecolor{keyword3}{named}{YellowOrange}
+\definecolor{keyword4}{named}{Violet}
 
 
 \lstdefinelanguage{michelson}{
   morekeywords = [1]{
-    parameter, storage, code
+    int, nat, bool, pair, operation, list, unit, mutez
   },
   morekeywords = [2]{
-    int, nat, bool, pair, operation, unit, mutez
+    parameter, storage, code
   },
   morekeywords = [3] {
     CAR, DUP, DIP, CDR, ADD, NIL, PAIR, GT, LOOP, PUSH, IF, ITER, AMOUNT, COMPARE, EQ, IF, SOURCE, CONTRACT, IF_NONE, FAILWITH, UNIT, TRANSFER_TOKENS, CONS
@@ -104,8 +104,8 @@ Tezosのコントラクトの実行に伴うガスの消費量のうち，本研
 プログラムの解釈実行を行う際に発生する\emph{interpreter cost}を見積もることを目的とする．
 各命令のガス消費量はRAMLのtickメトリックを用いて表現する．
 tickメトリックは，リソースの消費量や発生するタイミングをユーザーが定義するためのメトリックで，
-tick関数というものを関数の定義中に呼び出すことでその関数のリソース消費量を定義することができる．
-本ライブラリの各命令について，その命令のinterpreter costに相当する値のtick関数を呼び出すよう定義し，
+RAMLに備えられている関数を呼び出すことでその関数のリソース消費量を定義することができる．
+本ライブラリの各命令について，その命令のinterpreter costに相当する値の関数を呼び出すよう定義し，
 tickメトリックを用いて，コントラクトを模倣するプログラムの解析を行い，コントラクトのinterpreter costを見積もる．
 
 いくつかのMichelsonコントラクトを模倣するRAMLプログラムを作成し，それに対して解析を行いガス消費量の見積もりを行った．
@@ -130,36 +130,37 @@ A smart contract is used to execute a transaction involving cryptocurrencies aut
 There is a concept of \emph{gas consumption} in smart contracts. 
 Gas is the fee for the computational resources used to execute a contract.
 When a contract is executed,  the execution of each instruction consumes gas corresponding to its computational cost.
-If the total consumption exceeds a prespecified amount, the execution of the program is aborted immediately and the effect of the program execution is rolled back.
-One who would like to execute a contract is required to pay cryptocurrency equivalent to the expected amount of gas in advance, which is not refunded even if the execution is aborted due to an out of gas error.
+If the total consumption exceeds the prespecified amount, the execution of the program is aborted immediately and the effect of the program execution is rolled back.
+One who would like to execute a contract is required to pay cryptocurrency equal to the expected amount of the gas consumption in advance, which is not refunded even if the execution is aborted due to an out of gas error.
 A method to statically analyze the gas consumption is therefore required to avoid such trouble.
 
 \emph{Resource Aware ML\ (RAML)\ } is one of the methods to analyze the execution cost of a program.
 RAML is a functional programming language equipped with the OCaml syntax.
-Based on the potential-based amortized analysis, which is an analysis of the costs of a sequence of operations whose costs vary depending on the state of the data structure,
-RAML automatically and statically analyzes the resource consumption bounds for a given program following a prespecified metric.
+Using the potential-based amortized analysis, which is an analysis of the costs of a sequence of operations whose costs vary depending on the state of the data structure,
+RAML automatically and statically analyzes the resource consumption bounds for a given program for a specified metric.
 
-This research proposes a method to statically analyze the gas consumption of a smart contract of cryptocurrency Tezos using RAML.
+This study proposes a method to statically analyze the gas consumption of a smart contract of cryptocurrency Tezos using RAML.
 A Tezos smart contract is written in a stack-based programming language Michelson.
-To this end, we implemented a library in RAML each of which imitates the behavior of each Michelson instruction.
+To this end, we implemented a library in RAML each function of which imitates the behavior of each Michelson instruction.
 Using this library, we can write a RAML program that imitates the behavior of a Michelson program.
 Then, we can estimate the gas consumption of the program by analyzing it with RAML.
 
-Since a Michelson instruction rewrites the stack, we implemented a RAML function that imitates it as one with {\tt (t list -> t list)}, where {\tt t} is the variant type that expresses stack elements and {\tt t list} is the type that expresses a stack.
+Since a Michelson instruction rewrites the stack, we implemented a RAML function that imitates each Michelson instruction as one with {\tt (t list $\rightarrow $ t list)}, where {\tt t} is the variant type that expresses stack elements and {\tt t list} is the type that expresses a stack.
 Then we can implement a RAML program that imitates the behavior of a Michelson program as one that applies the functions in our library to the initial stack.
 
-Where the gas consumption of execution of a Tezos contract consists of several types of costs, we aim at estimating an \emph{interpreter cost} which is for executing a Michelson program.
+Although the gas consumption of execution of a Tezos contract consists of several types of costs, we aim at estimating the \emph{interpreter cost}, which is for executing a Michelson program.
 For this purpose, we use the \emph{tick metric} of RAML, which is used for defining the quantity of custom resource consumption.
-We can define the resource consumption of a function by calling a tick function in the definition of it. 
-We implemented the library so that each function calls a tick function that expresses its interpreter cost to estimate the interpreter cost of a contract by analyzing a RAML program.
+We can define the resource consumption of a function by calling a primitive function provided by RAML. 
+We implemented the library so that each function calls the function that expresses its interpreter cost.
+By encoding a contract with our library as a RAML program, we can estimate the interpreter cost of the contract by analyzing the RAML program with the tick metric.
 
-We encoded several Michelson contracts to RAML programs using our library and analyzed them with RAML to estimate the gas consumption.
-The analysis was successful for the contracts that consisted only of instructions of basic stack operations and conditional branch; the estimation was correct for these contracts.
+We encoded several Michelson contracts to RAML programs using our library and analyzed them to estimate the gas consumption.
+The analysis was successful for the contracts that consisted only of instructions of basic stack operations and conditional branches; the estimation was correct for these contracts.
 However, the analysis was not successful for contracts that contain instructions for recursion on lists.
 RAML could not analyze the interpreter cost of contracts that contain instructions whose gas consumption depends on the contents of the stack.
 
-Extension of the library to cover more Michelson instructions and handle recursion on lists are left as future work.
-We also plan to study the other types of costs than the interpreter cost and estimate them.
+Extension of the library to cover more Michelson instructions and to handle recursion on lists are left as future work.
+We also plan to study other types of costs than the interpreter cost and estimate them.
 
 
 \end{eabstract}
@@ -184,14 +185,14 @@ We also plan to study the other types of costs than the interpreter cost and est
 また，コントラクトを実行しようとする際は，あらかじめ一定量のガスに相当する通貨を支払う必要があるが，これは実行が取り消されても返金されないため，
 実行コストが無駄にかかってしまうことになる．
 このような無駄なコストを削減し，コントラクトの実行コストを抑えるために，
-コントラクトの実行者は実際のガス消費量に近いガス許容量を設定することが望ましい．
+コントラクトの実行者は実際のガス消費量より大きいが，大幅には上回らないガス許容量を設定することが望ましい．
 そのために，ガスの消費量を静的に解析する手法が求められている．
 
 本研究では，仮想通貨Tezosのスマートコントラクトのガス消費量を静的に解析する手法を提案する．
 Tezosはスマートコントラクトを用いたブロックチェーンを技術基盤とする仮想通貨の1つで，
 そのスマートコントラクトはスタックベースのプログラミング言語Michelsonで記述される．
 
-解析を行う手法として，本研究ではResource Aware ML\ (RAML)\ \cite{raml}を用いる．
+解析を行う手法として，本研究では\emph{Resource Aware ML\ (RAML)}\ \cite{raml}を用いる．
 RAMLは，ポテンシャルベースの償却解析と呼ばれる，データ構造の状態に応じてコストが変わる一連の操作のコストを解析する手法をもとに設計された\cite{amortized}，
 OCamlで用いられる文法を備えた関数型プログラミング言語である．
 RAMLは入力として与えられたプログラムのリソース消費量の上界を，
@@ -202,13 +203,13 @@ MichelsonのプログラムをRAMLで解析するために，Michelsonの各命�
 そのRAMLプログラムを，RAMLに備えられているメトリックの一つであるtickメトリックを用いて，
 コントラクトのガス消費量のうち，プログラムの解釈実行を行う際に発生するinterpreter costの見積もりを行う．
 以上のような手法で，いくつかのコントラクトの解析を行った結果，
-単純な命令のみで構成されているコントラクトのinterpreter costを正しく見積もることができた一方，
-interpreter costの複雑な計算によって算出されるような命令を含むコントラクトについては見積もりが難しく，
-今後の課題といえる．
+単純な命令のみで構成されているコントラクトのinterpreter costを正しく見積もることができた．
+一方，interpreter costが複雑な計算によって算出されるような命令を含むコントラクトについては見積もりが難しく，
+今後の課題である．
 
 本報告書は以下のように構成されている．第2章では，本研究の背景知識として，TezosとMichelson，
 スマートコントラクトにおけるガス消費の仕組み，そして解析に用いるRAMLについてそれぞれ説明する．
-第3章では，Mihcelsonプログラムを模倣するRAMLプログラムの実装について説明する．
+第3章では， Michelsonプログラムを模倣するRAMLプログラムの実装について説明する．
 第4章では，コントラクトのガス消費量の解析についていくつかの例を挙げ，結果と考察を述べる．
 第5章では，本研究の関連研究について論ずる．
 最後に第6章で本研究についての結論を述べる．
@@ -222,17 +223,17 @@ interpreter costの複雑な計算によって算出されるような命令を�
 \subsection{TezosとMichelson}\label{subsec-pre-tezos}
 Tezosはスマートコントラクトを用いたブロックチェーンを技術基盤とする仮想通貨の1つである．
 BitcoinやEthereumといった仮想通貨が先立って流通されるようになった中，
-Tezosはそれらのブロックチェーンの弱点を解消することを目的として開発された．
-Tezosの特徴として"Proof-of-Stake"(PoS)と呼ばれるコンセンサスアルゴリズムを採用していることが挙げられる．
-従来のブロックチェーンで採用されている"Proof-of-Work"(PoW)が，
+Tezosはそれらのブロックチェーンの弱点を解消することを目的として開発された\cite{tezos}．
+Tezosの特徴として\emph{Proof-of-Stake}\ (PoS)\ と呼ばれるコンセンサスアルゴリズムを採用していることが挙げられる．
+従来のブロックチェーンで採用されている\emph{Proof-of-Work}\ (PoW)\ が，
 コンピュータの計算能力が高いユーザーに対してブロック生成の権利を与えているのに対して，
 PoSでは通貨の保有量が多いユーザーに対してブロック生成の権利が与えられる．
-Tezosの採用しているPoSは"Liquid Proof-of-Stake"(LPoS)といい，
+Tezosの採用しているPoSは\emph{Liquid Proof-of-Stake}\ (LPoS)\ といい，
 ブロック生成の権利を他のユーザーに委任することができる．
 これにより，多くのユーザーがブロック生成に参加することができ，
 プロトコルの分散性を高めるという目的に寄与している．
 
-Mihcelsonは，Tezosのスマートコントラクトを記述するために用いられるプログラミング言語である．
+ Michelsonは，Tezosのスマートコントラクトを記述するために用いられるプログラミング言語である．
 この言語はスタックベースで，高レベルのデータ型とプリミティブ，および厳密な静的型チェックを備えている\cite{michelson}．
 
 
@@ -267,7 +268,7 @@ Mihcelsonは，Tezosのスマートコントラクトを記述するために用
 \end{comment}
 
 Michelsonの文法のうち，本研究でRAMLで実装する部分の文法を図\ref{image1}に示す．
-$T$はスタックの要素の型を表す．$T$は整数値の型{\tt int}，自然整数の型{\tt nat}，Tezosにおける通貨量の型{\tt mutez}，
+$T$はスタックの要素の型を表す．$T$は整数値の型{\tt int}，自然整数の型{\tt nat}，Tezosの通貨量の型{\tt mutez}，
 Booleanの型{\tt bool}，アドレスを表す型{\tt address}，Unit値の型{\tt unit}，オプション値の型{\tt option}，
 命令を表す型{\tt operation}，コントラクトを表す型{\tt contract}，ペアの型{\tt pair}，ユニオンの型{\tt or}がある．
 $V$はスタックの要素の値を表し，整数値の$i$，Booleanの{\tt True，False}，アドレスの$a$，
@@ -295,15 +296,15 @@ Michelsonのプログラムは，プログラムに対して与えられるパ�
 このプログラムの終了後に実行される操作のリストと，
 プログラムの実行中に更新されブロックチェーン上に保存されるストレージのペアを返す純粋な関数である．
 プログラムの本体は，順番に実行される一連の命令である．
-各命令は，スタックを入力として受け取り，そのスタックの内容を書き換えて出力する関数である．
+各命令は，スタックを入力として受け取り，そのスタックの内容を書き換えて出力する．
 プログラムの初期スタックは，引数として与えられたパラメータとストレージのペアが一番上に積まれた状態のもので，
 その初期スタックに対して順番に命令が適用され，
 最後に操作のリストとストレージのペアが一番上に積まれた状態のスタックが残り，それが出力される．
 
-Michelsonプログラムの例として，簡単な演算を行うプログラムであるexample1のコードをCode \ref{code1}に示す．
+Michelsonプログラムの例として，簡単な演算を行うプログラムであるexample1のコードをCode \ref{ex1tz}に示す．
 これは，整数のペアをパラメータとして受け取り，2つの整数の和をストレージに書き込むプログラムである．
-なお，各命令後のスタックの状態を/*,*/で囲われたコメントで示している．
-\begin{lstlisting} [language=michelson, caption=example1.tz, label=code1]
+なお，各命令後のスタックの状態を/*，*/で囲われたコメントで示している．
+\begin{lstlisting} [language=michelson, caption=example1.tz, label=ex1tz]
 parameter (pair int int); 
 storage int;
 code  /* ((para1, para2), st) */
@@ -330,18 +331,18 @@ Michelsonプログラムのコードは，プログラムに対して与えら�
   \item 4行目の{\tt CAR}は，スタックのトップの要素がペアだった場合，その要素を取り出して，
   ペアの第1要素をスタックに積む命令である．4行目時点でのスタックは{\tt (para1, para2)}である．
   \item 5行目の{\tt DUP}は，スタックのトップの要素を複製してスタックに積む命令である．
-  5行目時点でのスタックは{\tt (para1, para2) : (para1, para2)}である．
-  \item 6行目は4行目と同じく{\tt CAR}を実行する．6行目時点でのスタックは{\tt para1 : (para1, para2)}である．
+  5行目時点でのスタックは{\tt (para1, para2)} : {\tt (para1, para2)}である．
+  \item 6行目は4行目と同じく{\tt CAR}を実行する．6行目時点でのスタックは{\tt para1} : {\tt (para1, para2)}である．
   \item 7行目の{\tt DIPは引数として命令列bodyを受け取る命令で，スタックのトップの要素を保持した状態で，
   その要素を取り出した状態のスタックに対してbodyを実行する命令である．
   つまり，スタックのトップのpara1を保持した状態で，スタック(para1, para2)に対してCDRを実行する．
   CDR}は，スタックのトップの要素がペアの場合，その要素を取り出して，ペアの第2要素をスタックに積む命令である．
-  よって，7行目時点でのスタックは{\tt para1 : para2}である．
+  よって，7行目時点でのスタックは{\tt para1} : {\tt para2}である．
   \item 8行目の{\tt ADD}は，スタックのトップの要素{\tt x}と2番目の要素{\tt y}の型が，それら2つの演算が定義されているような型である場合，
-  {\tt xとyを取り出し，x+yの値をスタックに積む命令である．例えば，xとyがともにint型ならば，x+yはint型である．
+  {\tt xとyを取り出し，x + yの値をスタックに積む命令である．例えば，xとyがともにint型ならば，x + yはint型である．
   para1 + para2の値をst'}と表すとすると，8行目時点でのスタックは{\tt st'}である．
   \item 9行目の{\tt NILは引数として型aを受け取る命令で，リストの型がaであるような空のリスト[]}をスタックに積む命令である．
-  9行目時点でのスタックは{\tt [] : st'}である．
+  9行目時点でのスタックは{\tt []} : {\tt st'}である．
   \item 10行目の{\tt PAIR}はスタックのトップの要素と2番目の要素を取り出し，それらのペアをスタックに積む命令である．
   この命令後，スタックは{\tt ([], st')}となり，プログラムが終了する．
 \end{itemize}
@@ -350,23 +351,23 @@ Michelsonプログラムのコードは，プログラムに対して与えら�
 実行中に更新されブロックチェーンに保存されるストレージの値storage'のペアのみが積まれている状態でなければならない．
 このとき，プログラム実行前のストレージの値storageと，プログラム実行後のストレージの値storage'の型が一致している必要がある．}
 
-Michelsonには静的型チェックが備えられている．それぞれの命令には，
-命令の実行前と実行後のスタックの状態を型で表した型規則が存在する．
-例えば，{\tt PAIR}についての型規則は以下のように表される．
+Michelsonには静的型検査が備えられている．それぞれの命令には，
+命令の実行前と実行後のスタックの状態を型で表した型付け規則が存在する．
+例えば，{\tt PAIR}についての型付け規則は以下のように表される．
 \begin{displaymath}
-  a' : b' : S' \rightarrow {\tt pair}\ a'\ b' : S'
+  {\tt a' : b'} : S' \rightarrow {\tt pair\ a'\ b'} : S'
 \end{displaymath}
 これは，実行前のスタックのトップの要素の型が{\tt a'，2番目の要素の型がb'のとき，
 実行後のスタックのトップの要素がpair a' b'となることを示している．
-また，ADDについての型規則は以下のように表される．}
+また，ADDについての型付け規則は以下のように表される．}
 \begin{displaymath}
   {\tt int : int} : S' \rightarrow {\tt int} : S'
 \end{displaymath}
 これは，実行前のスタックのトップの要素と2番目の要素がともに{\tt intである必要があり，
 その場合，実行後のスタックのトップの要素がint}となることを示している．
 
-命令を実行する前にスタックの状態が型規則に則った形でない場合，命令は失敗する．
-これを防ぐために，プログラム実行前に静的な型チェックが行われる．
+命令を実行する前にスタックの状態が型付け規則に則った形でない場合，命令は失敗する．
+これを防ぐために，プログラム実行前に静的な型検査が行われる．
 
 \subsection{コントラクトのガス消費の仕組み}\label{subsec-pre-gas}
 スマートコントラクトにおけるガスは，コントラクトを実行させる上で必要となる手数料を表している．
@@ -385,33 +386,33 @@ Michelsonには静的型チェックが備えられている．それぞれの�
 無駄なコストとなってしまう．
 
 以降は，Tezosにおけるガス消費量の計算について述べる．
-Tezosにおいて，トップレベルのコードやラムダ，型などの値は全てバイトシーケンスとして保存され，送信される．
+Tezosにおいて，トップレベルのコードや関数値，型などの値は全てバイト列として保存され，送信される．
 コントラクトの実行において発生するガスの消費量は，以下の8つのコストに分けられていて，それぞれ計算方法や発生するタイミングが異なる．
 
 \begin{enumerate}
   \item データベースにアクセスして，必要とする値が存在するかどうか確認し，その値を読み込む．
-  このとき，reading costが発生する．
-  \item バイトシーケンスは，型なしの中間表現であるMicheline表現へと逆シリアル化される．
-  このとき，deserialization costが発生する．Micheline表現では，全ての値が以下の要素で表される．
+  このとき，reading costと呼ばれるコストが発生する．
+  \item バイト列は，型なしの中間表現であるMicheline表現へと逆シリアル化される．
+  このとき，deserialization costと呼ばれるが発生する．Micheline表現では，全ての値が以下の要素で表される．
   \begin{itemize}
     \item integer
     \item string
-    \item バイトシーケンス
+    \item バイト列
     \item 命令や型などのプリミティブ
     \item 値のシーケンス
   \end{itemize}
   \item Micheline表現は，プロトコル固有の型付き表現に解析される．
-  このとき，parsing costが発生する．
+  このとき，parsing costと呼ばれるコストが発生する．
   \item 型付き表現への解析において，ある型と別の型の等価性をチェックすることがある．
-  このとき，type compaison costが発生する．
+  このとき，type compaison costと呼ばれるコストが発生する．
   \item 型付き表現はインタプリタに渡され，コントラクトの内容が解釈実行される．
-  このとき，interpreter costが発生する．
+  このとき，interpreter costと呼ばれるコストが発生する．
   \item コントラクトの実行後，型付き表現はMicheline表現に変換される．
-  このとき，unparsing costが発生する．
-  \item Micheline表現はバイトシーケンスへとシリアル化され，保存される．
-  このとき，Ssrialization costが発生する．
+  このとき，unparsing costと呼ばれるコストが発生する．
+  \item Micheline表現はバイト列へとシリアル化され，保存される．
+  このとき，Ssrialization costと呼ばれるコストが発生する．
   \item コントラクトの実行によって変更されたデータをデータベースに書き込む．
-  このとき，writing costが発生する．
+  このとき，writing costと呼ばれるコストが発生する．
 \end{enumerate}
 
 それぞれのコストは，以下に示すフィールドをもつレコードとして内部的に表現される．\\
@@ -431,22 +432,21 @@ Tezosにおいて，トップレベルのコードやラムダ，型などの値
 \hspace{15pt} byte\_written\_weight = 15 \\
 例として，reading costは通常，以下のようになる． \\
 \hspace{15pt} \{ reads: scale 2 \\
-\hspace{15pt} , bytes\_read: scale \$ <length of the value in bytes> \\
-\hspace{15pt} \} \\
-scaleは値を実際に出力する値にスケーリングする関数のようなものである．
-このコストに重みをかけた結果として，ガス消費量がscale \$ 200 + 10 * bytes\_readと得られる．
+\hspace{15pt} , bytes\_read: scale (<length of the value in bytes>) \} \\
+scaleは値を実際に出力する値にスケーリングする関数である．
+このコストに重みをかけた結果として，ガス消費量がscale\ (200 + 10 * bytes\_read)\ と得られる．
 
 
 
 
-\subsection{Resource Aware ML}\label{subsec-pre-raml}
+\subsection{Resource Aware ML\ (RAML)}\label{subsec-pre-raml}
 Resource Aware ML\ (RAML)\ は，一階の関数プログラムの多項式リソース消費量の上界を，
-静的かつ自動的に計算する関数型プログラミング言語である．
+静的かつ自動的に解析する機能をもつ関数型プログラミング言語である．
 プログラムの文法はOCamlのものを採用しており，入力としてOCamlの文法で書かれたプログラムを与えると，
-その多項式リソース境界を出力するツールとして扱うことができる．
+その多項式リソース上界を出力するツールとして扱うことができる．
 
 リソース消費量の分析は，ポテンシャルベースの償却解析によって行われる\cite{amortized}．
-計算量の1つとして，同じ処理を連続で行ったときの1回あたりの計算量を償却計算量といい，
+計算量の1つとして，同じ処理を連続で行ったときの1回あたりの計算量を償却計算量という．
 償却計算量を求めることを償却解析といい，データ構造の状態に応じてコストが変わる一連の操作のコストを解析する手法として用いられる．
 償却解析における手法の一つとして，データ構造に対してポテンシャル$\Phi$と呼ばれる非負の数値を導入する方法がある．
 ポテンシャルはそのデータ構造に対して貯まっていて，処理に対して支払われる貯金として扱われる．
@@ -516,9 +516,9 @@ big-step operational semanticsによる各評価ステップに対して一定�
 自分の注目するリソースの消費量を分析の出力として得ることができる．
 
 RAMLプログラムの例として，リストに対するクイックソートを行うプログラムであるquicksortの
-コードをCode \ref{code2}に示す．
+コードをCode \ref{quickraml}に示す．
 
-\begin{lstlisting} [language=caml, caption=quicksort.raml, label=code2]
+\begin{lstlisting} [language=caml, caption=quicksort.raml, label=quickraml]
 let rec append l1 l2 =
   match l1 with
     | [] -> l2
@@ -553,7 +553,7 @@ lの要素をf}に関数適用したときの返り値によって2つのリス�
 14-18行目の{\tt quicksort関数は，リストlと，l}の要素の型の値を2つ受け取って{\tt bool型の値を返す関数gtを引数として受け取り，
 lに対してクイックソートを実行する関数である．quicksortの定義中にappendとpartition}が用いられている．
 
-RAMLのプログラムの実行において，主にevaluationとanalysisの2つの操作がある．
+RAMLのプログラムの実行において，主要な操作としてevaluationとanalysisの2つがある．
 
 evaluationは，プログラムの評価を行い，main式の評価結果の返り値を出力する．
 また，先述した4つのメトリックによるリソース消費量を計算し出力する．
@@ -601,7 +601,7 @@ d1およびd2は，リソース消費量の境界の次数を指定する．分�
 -print level <lev>は式を構文木として見た際に深さが<lev>以下の関数の型を出力する．
 -mは，指定するとモジュールモードとなり，main式の代わりにトップレベルで定義された関数の型をすべて出力する．
 prog.ramlは入力として用いるプログラムファイルである．
-func\_name}はモジュールモードでのみ指定することができるオプションで，指定した関数についてのみ型を出力する．
+func\_name}はモジュールモードでのみ指定することができるオプションで，指定した名前の関数についてのみ型を出力する．
 
 quicksort.ramlを入力として，{\tt mode=upper，metric=steps，d1=1，d2=4，}
 {\tt -print level 1}とオプションを設定してanalysisを実行した結果を以下に示す．
@@ -648,7 +648,7 @@ Analyzing expression ...
   #Constraints:  638
 \end{lstlisting}
 
-11行目にTrying degree: 1，2とあるが，指定された次数の1，2，3，4の低い値から順に分析を行い，
+11行目にTrying degree: 1，2とあるが，{\tt d1およびd2}で指定された次数1，2，3，4の低い値から順に分析を行い，
 次数が2のときに分析が成功したことを示している．指定された次数において分析が成功しない場合，その旨がエラーメッセージで表示される．
 15-29行目には，main式で用いられた関数{\tt quicksort}の分析の結果が示されている．
 17行目に{\tt quicksortの型が示されている．[]中の型が引数の型で，複数ある場合は;}で区切られている．
@@ -667,19 +667,19 @@ Analyzing expression ...
 
 
 \section{RAMLでのMichelsonプログラムの実装} \label{sec-program}
-本節では，RAMLを用いて，Michelsonプログラムの挙動を模倣するプログラムを実装する手法について述べる．
+本章では，RAMLを用いて，Michelsonプログラムの挙動を模倣するプログラムを実装する手法について述べる．
 具体的には，Michelsonにおいて実装されている文法や命令を模倣するライブラリをRAMLにおいて設計する，
 また，設計したライブラリについて，各命令において発生するガス消費量を表すtick関数を定義する．
 このライブラリを用いて，Michelsonプログラムの挙動を模倣するRAMLプログラムを実装する．
 第3.1節では文法について，第3.2節では命令について，第3.3節ではライブラリを用いたプログラムについて，
-第3.4節ではガス消費量に関するtick関数の定義について述べる．
+第3.4節ではtickメトリックを用いたガス消費量の見積もりについて述べる．
 なお，実装したライブラリは本研究のGitHubレポジトリ\footnote{https://github.com/yutono326/raml}のlibrary/michleson.ramlにあるので，適宜参照されたい．
 
 \subsection{文法} \label{subsec-pro-grammar}
 Michelsonの文法は，すでに第\ref{subsec-pre-tezos}節で示した．Michelsonの文法をライブラリで設計するにあたって，
-スタックの要素をOCamlのヴァリアント型を用いて表す．Code\ref{code3}に実装したヴァリアント型{\tt t}を示す．
+スタックの要素をOCamlのヴァリアント型を用いて表す．Code\ref{variant}に実装したヴァリアント型{\tt t}を示す．
 
-\begin{lstlisting} [language=caml, caption=スタックの要素を表すヴァリアント型, label=code3]
+\begin{lstlisting} [language=caml, caption=スタックの要素を表すヴァリアント型, label=variant]
 type t =
   Int of int | Nat of Rnat.t | Mutez of Rnat.t |
   Bool of bool | Address | Unit | MNone | MSome of t |
@@ -692,7 +692,7 @@ type t =
 address型のAddress，unit型のUnit，option型のMNone，MSone，list型のLNil，LCons，
 operation型のOperation，\\contract型のContract，pair型のPair，or型のLeft，Rightがある．
 Natの引数の型であるRnat.tは，RAMLに用意されている自然数を表す型で，
-四則演算add，mult，minus，div\_modと，n}が0か1以上かで分岐する条件分岐関数{\tt ifz}が用意されている．
+四則演算add，mult，minus，div\_modと，n}が0か1以上かで分岐する条件分岐関数{\tt ifz}が関数として用意されている．
 {\tt Operation，Address，Contractについては，簡略化のために引数をとらない単一のコンストラクタとして扱う．
 また，list}型の要素を設計するにあたって，先述したようにRAMLにおいて複雑な帰納的データ型の実装には制限があり，
 ヴァリアント型{\tt tのコンストラクタとして，t list型の値を引数にとるコンストラクタを宣言することができない．
@@ -716,13 +716,25 @@ Michelsonの命令は，スタックを受け取り，そのスタックの内�
   後述するtickメトリックによるによるガス消費量の見積もりにおいて用いる．
   \item 中置演算子{\tt |>は，引数として受け取った2つの関数f，g}を，引数のスタックに対して続けて適用する演算子である．
   Michelsonにおける命令のシーケンスに相当する役割をもつ．
-  \item {\tt LOOP}はMichelsonの挙動を再現すると解析が難しくなるため，
-  挙動を簡単なものにしている．具体的には，引数として{\tt Rnat.t型の引数nを受け取って，
-  スタックのトップの要素に関わらず，引数の命令シーケンスをn回残りのスタックに適用する関数として定義する．
-  20行目のRnat.ifz}は，1つ目の引数の{\tt Rnat.t型の値n}が0ならば2つ目の引数の関数を，
+  \item {\tt LOOP}はMichelsonの挙動を再現すると解析が難しくなるため，以下に示すように
+  挙動を簡単なものにしている．
+  \begin{lstlisting} [language=caml]
+let rec loop n body s =
+  Rnat.ifz n
+    (fun () ->
+      match s with
+      | _ :: xs -> xs
+      | _ -> raise Invalid_argument)
+    (fun n' ->
+      match s with
+      | _ :: xs -> loop n' body (body xs)
+      | _ -> raise Invalid_argument)
+  \end{lstlisting}
+  具体的には，本来の引数に加えて{\tt Rnat.t型の引数nを受け取って，
+  スタックのトップの要素に関わらず，引数の命令シーケンスをn回，スタックのトップを除いた残りのスタックに適用する関数として定義する．
+  定義中に用いられるRnat.ifz}は，1つ目の引数の{\tt Rnat.t型の値n}が0ならば2つ目の引数の関数を，
   {\tt n}が1以上ならば${\tt n'=n-1}$として3つ目の引数の関数を適用する条件分岐関数である．
-  \item {\tt DIPは，スタックのトップを保持して，残りのスタックに対して引数の命令のシーケンスを適用する関数として定義する．
-  \item PUSHは，受け取った要素をスタックに積む命令として定義するが，
+  \item {\tt PUSHは，受け取った要素をスタックに積む命令として定義するが，
   積む要素の型の指定はなく，値のみを引数として受け取る．
   \item ADD，SUB，MUL，EDIV}は，それぞれスタックのトップと2番目の要素を取り出し，整数値の演算結果をスタックに積む関数として定義する．
   命令にもよるが，スタックのトップと2番目の要素の型として，{\tt Int同士，Nat同士，IntとNat，Mutez同士，MutezとNatといったパターンがあり，
@@ -732,7 +744,7 @@ Michelsonの命令は，スタックを受け取り，そのスタックの内�
   \item {\tt COMPARE}はスタックのトップと2番目の要素の比較を行い，トップの要素の方が大きい場合は{\tt Int 1}を，
   2番目の要素の方が大きい場合は{\tt Int -1を，等しい場合はInt 0をスタックに積む関数として定義する．
   Int，Nat，Mutezについて比較を行うことができるが，違う型同士の比較はできない．
-  \item NONE，LEFT，RIGHT，NIL}について，Michelsonの定義では
+  \item NONE，LEFT，RIGHT，NIL}について，Michelsonにおける命令の定義では
   それぞれオプション値，ユニオン，リストの中身の型を引数で指定する必要があるが，
   本ライブラリの関数の定義では型指定はしない．
   \item{\tt MAP，SIZE，ITERはリストに対する再帰を行う命令で，
@@ -747,11 +759,11 @@ Michelsonの命令は，スタックを受け取り，そのスタックの内�
 Michelsonのプログラムでは，プログラムに与えられる{\tt parameterと，ブロックチェーン上に保存されているstorageの型宣言から始まり，
 parameterとstorage}のペアが積まれた初期スタックに対して，一連の命令が順番に実行される．
 このプログラムの挙動を模倣するRAMLのプログラムを，設計したライブラリを用いて，
-初期スタックのリストに対して関数を順に適用するプログラムとして実装する．
+初期スタックを表すリストに対して関数を順に適用するプログラムとして実装する．
 
-Code\ref{code1}に示したプログラムexample1.ramlの挙動を模倣するRAMLプログラムexample1.ramlをCode\ref{code4}に示す．
+Code\ref{ex1tz}に示したプログラムexample1.tzの挙動を模倣するRAMLプログラムexample1.ramlをCode\ref{ex1raml}に示す．
 
-\begin{lstlisting} [language=caml, caption=example1.raml, label=code4]
+\begin{lstlisting} [language=caml, caption=example1.raml, label=ex1raml]
 let _ =
   (pair
   (nil
@@ -772,7 +784,7 @@ RAMLプログラムでは初期スタックの値を宣言し，それに対し�
 このプログラムのevaluationを実行した結果を以下に示す．
 
 \begin{lstlisting}[basicstyle={\ttfamily\color{base}\scriptsize}]
-$ ./main eval michelson/example1.raml
+$ ./main eval library/example1.raml
 
 Resource Aware ML, Version 1.5.0, June 2020
 
@@ -784,11 +796,11 @@ Evaluating expression ...
 
   Return value:
     [ Pair ( (), LNil (), Int 8 )
-                                               ]
+                                                ]
 
-  Evaluation steps: 270.00
-  Ticks:            35.00
-  Heap space:       166.00
+  Evaluation steps: 249.00
+  Ticks:            34.00
+  Heap space:       143.00
   Flips:            0.00
 \end{lstlisting}
 
@@ -797,7 +809,7 @@ Evaluating expression ...
 
 \subsection{tickメトリックによるガス消費量の見積もり} \label{subsec-pro-gas}
 スマートコントラクトのガス消費量を見積もりを行うにあたって，コントラクトを実際に実行してそのガス消費量を調べる必要がある．
-コントラクトの実行環境として，Tezosハンズオン\footnote{https://gitlab.com/dailambda/docker-tezos-hands-on}のサンドボックス環境を用いる．
+コントラクトの実行環境として，Tezos開発コミュニティから提供されている仮想環境\footnote{https://gitlab.com/dailambda/docker-tezos-hands-on}を用いる．
 この環境を利用する利点として，単体のコンピュータで完結していて外部のネットワークを必要としていない点，環境をいつでもリセットできる点が挙げられる．
 
 第\ref{subsec-pre-gas}節でも述べたように，
@@ -807,11 +819,11 @@ Evaluating expression ...
 interpreter costを選んだ理由として，命令毎にコストが設定されているので，後述する方法による見積もりがしやすいことが挙げられる．
 
 コントラクトのinterpreter costを調べるにあたって，{\tt run script <src> on storage <storage> and input <input> --trace-stack [--gas <gas>]というコマンドを実行し，ガス消費の推移を調べるという方法を用いる．
-これは，プログラムファイル<src>のスクリプトを，parameterを<input>，storageを<storage>とした上で実行するコマンドで，
+これは，プログラムファイル\ <src>\ のスクリプトを，parameterを\ <input>，storageを\ <storage>\ とした上で実行するコマンドで，
 --trace-stack}というオプションをつけることで1ステップ毎のスタックの状態，ガスの残量（使用許容量-消費量）が出力される．
-{\tt --gas <gas>}はスクリプト開始時のガスの使用許容量を指定できるオプションである．
+{\tt --gas <gas>\ }はスクリプト開始時のガスの使用許容量を指定できるオプションである．
 
-Code\ref{code1}に示したプログラムexample1.tzについてrun scriptを実行した結果を以下に示す．
+Code\ref{ex1tz}に示したプログラムexample1.tzについてrun scriptを実行した結果を以下に示す．
 
 \begin{lstlisting}[basicstyle={\ttfamily\color{base}\scriptsize}]
 $ ./tezos-client run script contracts/pairadd.tz on storage 0 and input 'Pair 3 5' --trace-stack --gas 100000
@@ -849,14 +861,14 @@ trace
 \end{lstlisting}
 
 6行目の{\tt trace}以降の出力で，1ステップ毎のスタックの状況，ガス残量が示されている．
-開始時のガス許容量を{\tt 100000units}と指定していてるが，
-最初の出力でいくらか減っていることから，reading cost，deserialization cost，parsing cost，type comparison costが消費された時点のガス残量が示されていると考えられる．
+開始時のガス許容量を{\tt 100000\ units}と指定していてるが，
+最初の出力時点でいくらか減っていることから，reading cost，deserialization cost，parsing cost，type comparison costが消費された時点のガス残量が示されていると考えられる．
 このガス残量から，最後の出力時点でのガス残量を引いた値がinterpreter costであると考えられる．
 {\tt trace以降を見てみると，location}はプログラムの実行の進行度合いを示す値で，例えば7-10行目を見てみると，
-{\tt locationが8から9になり，最初の命令であるCARが実行されてスタックが書き換えられ，ガスが3units消費されていることがわかる．
-ここからCAR命令のinterpreter costが3units}であると推測できる．
+{\tt locationが8から9になり，最初の命令であるCARが実行されてスタックが書き換えられ，ガスが3\ units消費されていることがわかる．
+ここからCAR命令のinterpreter costが3\ units}であると推測できる．
 また，17-23行目では{\tt DIP \{CDR\} が実行されているが，
-命令のシーケンスなどにおいて\{，\}を読み込むとガスが1units}消費されていることがわかる．
+命令のシーケンスなどにおいて\{，\}を読み込むとガスが1\ units}消費されていることがわかる．
 これがinterpreter costに含まれるかどうかは定かではないが，この消費量も含めて見積もることとする．
 以上の例に倣って，様々なMichelsonプログラムについてrun scriptコマンドを実行し，各命令のinterpreter costを調べた．
 
@@ -866,74 +878,31 @@ trace
 
 以下，tick関数によって正確にinterpreter costを見積もることのできない命令について述べる．
 \begin{itemize}
-  \item {\tt ADD，SUB，MUL，EDIV}の整数値の演算の命令におけるinterpreter costは，スタックの要素の整数値の絶対値に依存していて，
+  \item {\tt ADD，SUB，MUL，EDIV}の整数値の演算の命令におけるinterpreter costは，スタックの要素の整数値の絶対値に依存していて
   \footnote{2つの整数値の絶対値のうち大きい方を$n$とすると，$\log_2 n$に比例する．}，
   それをtick関数で表すことはできなかった．ライブラリの命令においては，
   スタックの要素にに関わらず一定のtick値を発生するように定義されている．
-  \item {\tt CONTRACT}命令のinterpreter costは，例外的に{\tt 10000units}以上となっており，
+  \item {\tt CONTRACT}命令のinterpreter costは，例外的に{\tt 10000\ units}以上となっており，
   さらに対象となるアドレスによって増減するため，設計したライブラリにおいて見積もるには情報が不十分であった．
   ライブラリの命令においては，12000.0のtick値を発生するように定義されている．
 \end{itemize}
 
 \section{解析例と考察}
 以下の5つのMichelsonプログラムについて，挙動を模倣するRAMLプログラムを，
-第\ref{sec-program}節で設計したライブラリを用いて実装し(それぞれexample1.raml，example2.raml，example3.raml，example4.raml，example5.ramlとする)，
+第\ref{sec-program}章で設計したライブラリを用いて実装し，
 tickメトリックによる解析を行い，interpreter costの見積もりを行った．
-
+\\
 \begin{description}
-  \item [example1.tz] Code\ref{code1}で示したプログラム．
-  \item [example2.tz] {\tt parameter}として受け取った整数値を0になるまで1ずつ減算して，ストレージに書き込む．コードをCode\ref{code5}に示す．
-  \item [example3.tz] {\tt parameter}として受け取った整数値が0より大きいなら1，0以下なら-1をストレージに書き込む．コードをCode\ref{code6}に示す．
-  \item [example4.tz] {\tt parameter}として受け取った整数値のリストの，要素の和をストレージに書き込む．コードをCode\ref{code7}に示す．
-  \item [example5.tz] {\tt source}と呼ばれる取引が始まった実行の起点のアカウントへ受け取った通貨を送金し返す．コードをCode\ref{code8}に示す．
+  \item [example1.tz] Code\ref{ex1tz}で示したプログラム．
+  \item [example2.tz] {\tt parameter}として受け取った整数値を0になるまで1ずつ減算して，ストレージに書き込む．
+  \item [example3.tz] {\tt parameter}として受け取った整数値が0より大きいなら1，0以下なら-1をストレージに書き込む．
+  \item [example4.tz] {\tt parameter}として受け取った整数値のリストの，要素の和をストレージに書き込む．
+  \item [example5.tz] {\tt source}と呼ばれる取引が始まった実行の起点のアカウントへ受け取った通貨を送金し返す．\\
 \end{description}
 
-\begin{lstlisting} [language=michelson, caption=example2.tz, label=code5]
-parameter int;
-storage int;
-code {  CAR ;
-        DUP ;
-        GT ;
-        LOOP { PUSH int -1 ; ADD ; DUP ; GT } ;
-        NIL operation ;
-        PAIR  }
-\end{lstlisting}
-
-\begin{lstlisting} [language=michelson, caption=example3.tz, label=code6]
-parameter int;
-storage int;
-code {  CAR ;
-        GT ;
-        IF {PUSH int 1} {PUSH int -1} ;
-        NIL operation ;
-        PAIR  }
-\end{lstlisting}
-
-\begin{lstlisting} [language=michelson, caption=example4.tz, label=code7]
-parameter (list int);
-storage int;
-code {  CAR ;
-        DIP { PUSH int 0 } ;
-        ITER { ADD } ;
-        NIL operation ;
-        PAIR  }
-\end{lstlisting}
-
-\begin{lstlisting} [language=michelson, caption=example5.tz, label=code8]
-parameter unit;
-storage unit;
-code {  CDR ;
-        NIL operation ;
-        AMOUNT ;
-        PUSH mutez 0 ;
-        COMPARE ;
-        EQ ;
-        IF
-          {}
-          { SOURCE ; CONTRACT unit ; { IF_NONE FAILWITH {} } ; AMOUNT ; UNIT ; TRANSFER_TOKENS ; CONS } ;
-        PAIR  }
-\end{lstlisting}
-
+Michelsonプログラムexample2.tz，example3.tz，example4.tz，exmaple5.tz，
+およびそれぞれを模倣するRAMLプログラムexample2.raml，example3.raml，example4.raml，exmaple5.ramlのコードを付録に付したので，
+適宜参照されたい．
 
 解析の結果を，表\ref{table1}に示す．interpreter costはrun scriptコマンドにおいて示されたinterpreter costで，
 derived upper boundはRAMLプログラムの解析の結果として得られた上界である．
@@ -988,13 +957,13 @@ let _ =
 その中でも，ブロックチェーン技術が幅広い用途に利用されるにつれ，スマートコントラクトが扱うデータの重要性も高まっており，
 大量の通貨をスマートコントラクト上で取り扱うため，プログラムを静的かつ形式的に検証する手法への需要が高まっている．
 
-西田・齋藤らは，Tezosのスマートコントラクト言語Michelsonの静的型検証ツールHelmholtzを開発した．
+西田らは，Tezosのスマートコントラクト言語Michelsonの静的型検証ツールHelmholtzを開発した\cite{helmholtz}\cite{hurui}．
 Helmholtzの開発にあたって，Mihchelsonのための篩型システムを単純型システムの拡張として実装している．
 この篩型システムは，スタックの型に対して条件を付けるシステムである．
 Helmholtzは，篩型の形式で表現され，ユーザーの定義した注釈が付けられたMichelsonプログラムを受け取る．
 次に，篩型システムに基づく仕様の注釈の入ったプログラムに対する型検査が行われ，
-型検査中に生成された検証条件はSMTソルバであるZ3によって検証される．
-コードは正しく型付けされているならばプログラムは仕様を満たすことが保証される．
+型検査中に生成された検証条件はSMTソルバであるZ3\cite{z3}によって検証される．
+Helmholtzの検証において，コードが正しく型付けされているプログラムは仕様を満たすことが保証される．
 
 \section{結論}\label{sec-conclusion}
 \subsection{結論} \label{subsec-conclusion-conclusion}
@@ -1028,7 +997,7 @@ interpreter costはコントラクトの実行コスト全体のごく一部に�
 
 \acknowledgments
 本報告書の執筆にあたり，多くの方々に支援いただきました．
-本研究に取り組むにあたって，研究テーマを提示していただき，終始適切な助言を賜り，丁寧に指導して下さった末永幸平准教授に心より感謝いたします．
+本研究に取り組むにあたって，研究テーマを提示して頂き，終始適切な助言を賜り，丁寧に指導して下さった末永幸平准教授に心より感謝いたします．
 また，TezosやMichelsonの体系や様々な知識について解説して頂いた古瀬淳氏と，基本的なMichelsonコードを提供して頂いた斉藤大聖氏に感謝いたします．
 そして，本報告書の執筆にあたって，添削や助言を頂いた五十嵐淳教授，和賀正樹助教をはじめ，多くの助言を頂いた五十嵐・末永研究室の皆様に深く感謝いたします．
 
@@ -1036,5 +1005,97 @@ interpreter costはコントラクトの実行コスト全体のごく一部に�
 \bibliographystyle{kuisunsrt}
 \bibliography{main}
 
+\appendix
+第4章において用いたMichelsonプログラムと，それを模倣するRAMLプログラムのコードを以下に示す．
+
+\begin{lstlisting} [language=michelson, caption=example2.tz, label=ex2tz]
+parameter int;
+storage int;
+code {  CAR ;
+        DUP ;
+        GT ;
+        LOOP { PUSH int -1 ; ADD ; DUP ; GT } ;
+        NIL operation ;
+        PAIR  }
+\end{lstlisting}
+
+\begin{lstlisting} [language=michelson, caption=example3.tz, label=ex3tz]
+parameter int;
+storage int;
+code {  CAR ;
+        GT ;
+        IF {PUSH int 1} {PUSH int -1} ;
+        NIL operation ;
+        PAIR  }
+\end{lstlisting}
+
+\begin{lstlisting} [language=michelson, caption=example4.tz, label=ex4tz]
+parameter (list int);
+storage int;
+code {  CAR ;
+        DIP { PUSH int 0 } ;
+        ITER { ADD } ;
+        NIL operation ;
+        PAIR  }
+\end{lstlisting}
+
+\begin{lstlisting} [language=michelson, caption=example5.tz, label=ex5tz]
+parameter unit;
+storage unit;
+code {  CDR ;
+        NIL operation ;
+        AMOUNT ;
+        PUSH mutez 0 ;
+        COMPARE ;
+        EQ ;
+        IF
+          {}
+          { SOURCE ; CONTRACT unit ; { IF_NONE FAILWITH {} } ; AMOUNT ; UNIT ; TRANSFER_TOKENS ; CONS } ;
+        PAIR  }
+\end{lstlisting}
+
+\begin{lstlisting} [language=caml, caption=example2.raml, label=ex2raml]
+let _ =
+  (pair
+  (nil
+  (loop (Rnat.of_int 10) (p |> push (Int (-1)) |> add |> dup |> gt |> p)
+  (gt
+  (dup
+  (car
+  (Pair (Int 10, Int 0) :: [])))))))
+\end{lstlisting}
+
+\begin{lstlisting} [language=caml, caption=example3.raml, label=ex3raml]
+let _ =
+  (pair
+  (nil
+  (if_ (p |> push (Int 1) |> p) (p |> push (Int (-1)) |> p)
+  (gt
+  (car
+  (Pair (Int 5, Int 0) :: []))))))
+\end{lstlisting}
+
+\begin{lstlisting} [language=caml, caption=example4.raml, label=ex4raml]
+let _ =
+  (pair
+  (nil
+  (iter_list (p |> add |> p)
+  (dip1 (p |> push (Int 0) |> p)
+  (car
+  (Pair (LCons (Int 1, LCons (Int 2, LCons (Int 3, LCons (Int 4, LNil)))), Int 0) :: []))))))
+\end{lstlisting}
+
+\begin{lstlisting} [language=caml, caption=example5.raml, label=ex5raml]
+let _ =
+  (pair
+  (if_ (p |> p) (p |> source |> contract |> if_none failwith (p |> p) |> amount |> unit |> transfer_tokens |> cons |> p)
+  (eq
+  (compare
+  (push (Mutez Rnat.zero)
+  (amount
+  (nil
+  (cdr
+  (Pair (Unit, Unit) :: [])))))))))
+\end{lstlisting}
 
 \end{document}

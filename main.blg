@@ -4,49 +4,47 @@ The top-level auxiliary file: main.aux
 The style file: kuisunsrt.bst
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Database file #1: main.bib
-Warning--entry type for "bitcoin" isn't style-file defined
---line 1 of file main.bib
 Warning--Missing required argument author in michelson
-You've used 5 entries,
+You've used 8 entries,
             2159 wiz_defined-function locations,
-            544 strings with 4755 characters,
-and the built_in function-call counts, 1279 in all, are:
-= -- 112
-> -- 32
-< -- 3
-+ -- 14
-- -- 9
-* -- 79
-:= -- 165
-add.period$ -- 6
-call.type$ -- 5
+            566 strings with 5982 characters,
+and the built_in function-call counts, 2247 in all, are:
+= -- 179
+> -- 83
+< -- 4
++ -- 32
+- -- 24
+* -- 149
+:= -- 304
+add.period$ -- 11
+call.type$ -- 8
 change.case$ -- 0
 chr.to.int$ -- 0
-cite$ -- 6
-duplicate$ -- 61
-empty$ -- 138
-format.name$ -- 18
-if$ -- 318
+cite$ -- 9
+duplicate$ -- 107
+empty$ -- 227
+format.name$ -- 48
+if$ -- 552
 int.to.chr$ -- 0
-int.to.str$ -- 5
-missing$ -- 3
-newline$ -- 19
-num.names$ -- 4
-pop$ -- 22
+int.to.str$ -- 8
+missing$ -- 5
+newline$ -- 30
+num.names$ -- 13
+pop$ -- 37
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 65
+skip$ -- 99
 stack$ -- 0
-substring$ -- 83
-swap$ -- 26
-text.length$ -- 3
+substring$ -- 115
+swap$ -- 37
+text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 1
-while$ -- 13
-width$ -- 6
-write$ -- 44
-is.kanji.str$ -- 18
-(There were 2 warnings)
+while$ -- 22
+width$ -- 9
+write$ -- 78
+is.kanji.str$ -- 51
+(There was 1 warning)

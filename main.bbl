@@ -1,27 +1,53 @@
 \begin{thebibliography}{1}
 
 \bibitem{bitcoin}
-Nakamoto, S.: Bitcoin: A peer-to-peer electronic cash system,
+Nakamoto, S.: Bitcoin: A peer-to-peer electronic cash system,\\
   \url{https://bitcoin.org/bitcoin.pdf} (2008).
+\newblock (Accessed on January 29th, 2021).
 
 \bibitem{tezos}
-Allombert, V., Bourgoin, M. and Tesson, J.: Introduction to the tezos
-  blockchain,  {\em 2019 International Conference on High Performance Computing
-  \& Simulation (HPCS)\/}, IEEE, pp.\ 1--10 (2019).
+Allombert, V., Bourgoin, M. and Tesson, J.: Introduction to the Tezos
+  Blockchain,  {\em 17th International Conference on High Performance Computing
+  {\&} Simulation, {HPCS} 2019, Dublin, Ireland, July 15-19, 2019\/}, {IEEE},
+  pp.\ 1--10 (2019).
 
 \bibitem{raml}
-Hoffmann, J., Aehlig, K. and Hofmann, M.: Resource aware ML,  {\em
-  International Conference on Computer Aided Verification\/}, Springer, pp.\
-  781--786 (2012).
+Hoffmann, J., Aehlig, K. and Hofmann, M.: Resource Aware {ML}, {\em Computer
+  Aided Verification - 24th International Conference, {CAV} 2012, Berkeley, CA,
+  USA, July 7-13, 2012 Proceedings\/} (Madhusudan, P. and Seshia, S.~A.(eds.)),
+  Lecture Notes in Computer Science, Vol.~7358, Springer, pp.\ 781--786 (2012).
 
 \bibitem{amortized}
-Hoffmann, J. and Hofmann, M.: Amortized resource analysis with polynomial
-  potential,  {\em European Symposium on Programming\/}, Springer, pp.\
-  287--306 (2010).
+Hoffmann, J. and Hofmann, M.: Amortized Resource Analysis with Polynomial
+  Potential, {\em Programming Languages and Systems, 19th European Symposium on
+  Programming, {ESOP} 2010, Held as Part of the Joint European Conferences on
+  Theory and Practice of Software, {ETAPS} 2010, Paphos, Cyprus, March 20-28,
+  2010. Proceedings\/} (Gordon, A.~D.(ed.)), Lecture Notes in Computer Science,
+  Vol.~6012, Springer, pp.\ 287--306 (2010).
 
 \bibitem{michelson}
-: Michelson: the language of Smart Contracts in Tezos,
+Michelson: the language of Smart Contracts in Tezos,\\
   \url{https://tezos.gitlab.io/008/michelson.html}.
-\newblock (Accessed on 01/29/2021).
+\newblock (Accessed on January 29th, 2021).
+
+\bibitem{helmholtz}
+Nishida, Y., Saito, H., Chen, R., Kawata, A., Furuse, J., Suenaga, K. and
+  Igarashi, A.: Helmholtz: A Verifier for Tezos Smart Contracts Based on
+  Refinement Types,  {\em 27th International Conference on Tools and Algorithms
+  for the Construction and Analysis of Systems (TACAS 2021)\/} (2021).
+\newblock To appear.
+
+\bibitem{hurui}
+齋藤大聖: 篩型を用いたTezosスマートコントラクト検証器, 修士論文,
+  京都大学大学院情報学研究科通信情報システム専攻 (2021).
+
+\bibitem{z3}
+de Moura, L.~M. and Bj{\o}rner, N.: {Z3:} An Efficient {SMT} Solver, {\em Tools
+  and Algorithms for the Construction and Analysis of Systems, 14th
+  International Conference, {TACAS} 2008, Held as Part of the Joint European
+  Conferences on Theory and Practice of Software, {ETAPS} 2008, Budapest,
+  Hungary, March 29-April 6, 2008. Proceedings\/} (Ramakrishnan, C.~R. and
+  Rehof, J.(eds.)), Lecture Notes in Computer Science, Vol.~4963, Springer,
+  pp.\ 337--340 (2008).
 
 \end{thebibliography}
