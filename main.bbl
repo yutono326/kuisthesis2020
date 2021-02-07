@@ -1,7 +1,7 @@
 \begin{thebibliography}{1}
 
 \bibitem{bitcoin}
-Nakamoto, S.: Bitcoin: A peer-to-peer electronic cash system,\\
+Nakamoto, S.: Bitcoin: A peer-to-peer electronic cash system, \\
   \url{https://bitcoin.org/bitcoin.pdf} (2008).
 \newblock (Accessed on January 29th, 2021).
 
@@ -26,7 +26,7 @@ Hoffmann, J. and Hofmann, M.: Amortized Resource Analysis with Polynomial
   Vol.~6012, Springer, pp.\ 287--306 (2010).
 
 \bibitem{michelson}
-Michelson: the language of Smart Contracts in Tezos,\\
+Michelson: the language of Smart Contracts in Tezos, \\
   \url{https://tezos.gitlab.io/008/michelson.html}.
 \newblock (Accessed on January 29th, 2021).
 
